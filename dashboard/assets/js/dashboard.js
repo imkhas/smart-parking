@@ -1,3 +1,17 @@
+// ===============================
+// SMART PARKING DASHBOARD JS
+// ===============================
+
+
+// -------------------------------
+// CONFIG
+// -------------------------------
+const API_URL = "/smart-parking/api/get_slots.php";
+
+
+// -------------------------------
+// DATE & TIME
+// -------------------------------
 function updateDateTime() {
 
     const now = new Date();
@@ -6,64 +20,126 @@ function updateDateTime() {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric'
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
     };
 
-    document.getElementById('datetime').innerHTML =
-        now.toLocaleDateString('en-US', options);
-}
+    const timeEl = document.getElementById('datetime');
 
-updateDateTime();
-
-setInterval(updateDateTime, 1000);
-
-
-/*
-=====================================
-DEMO SLOT UPDATE
-Replace with AJAX + Database later
-=====================================
-*/
-
-const slotData = {
-    slot1: 1,
-    slot2: 1,
-    slot3: 1,
-    slot4: 0
-};
-
-function updateDashboard() {
-
-    let occupied = 0;
-
-    Object.values(slotData).forEach(status => {
-        if(status === 1) occupied++;
-    });
-
-    const available = 4 - occupied;
-
-    document.getElementById('occupied-count').innerText = occupied;
-    document.getElementById('available-count').innerText = available;
-    document.getElementById('available-slots').innerText = available;
-
-    const rate = Math.round((occupied / 4) * 100);
-
-    document.getElementById('occupancy-rate').innerText = rate + '%';
-
-
-    if(available === 0) {
-
-        document.getElementById('parking-status').innerText = 'FULL';
-        document.getElementById('parking-message').innerText =
-            'No available parking slots';
-
-    } else {
-
-        document.getElementById('parking-status').innerText = 'OPEN';
-        document.getElementById('parking-message').innerText =
-            available + ' parking slots available';
+    if (timeEl) {
+        timeEl.innerHTML = now.toLocaleDateString('en-US', options);
     }
 }
 
-updateDashboard();
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+
+// -------------------------------
+// SAFE UI UPDATE FUNCTION
+// -------------------------------
+function safeSet(id, value) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerText = value;
+    }
+}
+
+
+// -------------------------------
+// LOAD PARKING SLOTS
+// -------------------------------
+function loadSlots() {
+
+    console.log("Fetching slots...");
+
+    fetch(API_URL)
+        .then(res => {
+
+            if (!res.ok) {
+                throw new Error("HTTP Error: " + res.status);
+            }
+
+            return res.json();
+        })
+        .then(data => {
+
+            console.log("DATA RECEIVED:", data);
+
+            let occupied = 0;
+            let total = data.length;
+
+            data.forEach(slot => {
+
+                const slotDiv = document.getElementById("slot" + slot.slot_id);
+
+                if (!slotDiv) {
+                    console.log("Missing slot element:", slot.slot_id);
+                    return;
+                }
+
+                const button = slotDiv.querySelector("button");
+
+                if (slot.status == 1) {
+
+                    slotDiv.className = "slot occupied";
+
+                    if (button) button.innerText = "OCCUPIED";
+
+                    occupied++;
+
+                } else {
+
+                    slotDiv.className = "slot available";
+
+                    if (button) button.innerText = "AVAILABLE";
+                }
+            });
+
+            let available = total - occupied;
+
+            let rate = total > 0
+                ? Math.round((occupied / total) * 100)
+                : 0;
+
+            // -------------------------------
+            // SAFE UI UPDATES
+            // -------------------------------
+            safeSet('occupied-count', occupied);
+            safeSet('available-count', available);
+            safeSet('available-slots', available);
+            safeSet('occupancy-rate', rate + '%');
+
+            safeSet('parking-status',
+                available === 0 ? "FULL" : "OPEN"
+            );
+
+            safeSet('parking-message',
+                available === 0
+                    ? "No available parking slots"
+                    : available + " slots available"
+            );
+
+            // Hide loading text safely
+            const loadingText = document.getElementById("loading");
+            if (loadingText) {
+                loadingText.style.display = "none";
+            }
+
+        })
+        .catch(err => {
+
+            console.error("FETCH ERROR:", err);
+
+            safeSet('parking-status', "ERROR");
+            safeSet('parking-message', "Failed to load parking data");
+        });
+}
+
+
+// -------------------------------
+// AUTO REFRESH SYSTEM
+// -------------------------------
+loadSlots();
+setInterval(loadSlots, 2000);

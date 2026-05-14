@@ -1,13 +1,14 @@
 <?php
 
-$host = "localhost";
-$user = "root";
-$password = "";
-$database = "smart_parking";
-
-$conn = mysqli_connect($host, $user, $password, $database);
+$conn = mysqli_connect(
+    "localhost",
+    "admin",
+    "admin123",
+    "smart_parking"
+);
 
 if (!$conn) {
-    die("Database Connection Failed");
+    die("DB Connection failed: " . mysqli_connect_error());
 }
+
 ?>

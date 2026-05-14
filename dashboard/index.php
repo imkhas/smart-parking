@@ -99,54 +99,9 @@
     </div>
 
 
-    <!-- STATISTICS -->
-    <div class="stats-container">
-
-        <div class="stat-box">
-            <div class="stat-icon blue">
-                <i class="fa-solid fa-square-parking"></i>
-            </div>
-
-            <p>Total Slots</p>
-            <h1>4</h1>
-        </div>
-
-
-        <div class="stat-box">
-            <div class="stat-icon red">
-                <i class="fa-solid fa-car-side"></i>
-            </div>
-
-            <p>Occupied</p>
-            <h1 id="occupied-count">3</h1>
-        </div>
-
-
-        <div class="stat-box">
-            <div class="stat-icon green">
-                <i class="fa-solid fa-car-side"></i>
-            </div>
-
-            <p>Available</p>
-            <h1 id="available-count">1</h1>
-        </div>
-
-
-
-        <div class="stat-box">
-            <div class="stat-icon purple">
-                <i class="fa-solid fa-chart-line"></i>
-            </div>
-
-            <p>Occupancy Rate</p>
-            <h1 id="occupancy-rate">75%</h1>
-        </div>
-
-    </div>
-
-</div>
-
+<!-- JavaScript Files -->
 <script src="assets/js/dashboard.js"></script>
+<script src="assets/js/ajax.js"></script>
 
 </body>
 </html>

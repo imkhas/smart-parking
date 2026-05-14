@@ -1,5 +1,5 @@
-#ifndef TIMER2_H_
-#define TIMER2_H_
+#define TIMER2_SUCCESS		0
+#define TIMER2_ERROR_INIT	0x2000
 
 #if defined(__cplusplus)
 extern "C" {
@@ -7,10 +7,8 @@ extern "C" {
 
 extern volatile uint32_t SYS_TICK;
 
-void TIMER2_Init(void);
+extern uint16_t TIMER2_Init(void);
 
 #if defined(__cplusplus)
 }
 #endif
-
-#endif /* TIMER2_H_ */
