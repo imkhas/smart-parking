@@ -125,14 +125,14 @@ int main() {
 					strcpy(str,"data=");
 					for(i = 0; i < SENSE_READING_TX_TH; i++) {
 						SENSE_Read(&reading);
-						sprintf(str1, ",%u,, %u,%lu,%f;",reading.sid, reading. mid, reading.timestamp, reading.value);
+						sprintf(str1, ",%u, %u,%lu,%f;",reading.sid, reading.mid, reading.timestamp, reading.value);
 						strcat(str, str1);
 					}
 					
 					str[strlen(str) - 1] = '\0';
 					printf("POST str = %s\n", str);
 					
-					if((err_code = CLIENT_POST("/sensor_data.php", str)) == CLIENT_SUCCESS) {
+					if((err_code = CLIENT_POST("/smart-parking/sensor_data.php", str)) == CLIENT_SUCCESS) {
 						timeout =  SYS_TICK + 30000;
 						POST_state_next = POST_STATE_WAIT;
 						}

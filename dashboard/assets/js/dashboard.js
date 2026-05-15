@@ -2,12 +2,7 @@
 // SMART PARKING DASHBOARD JS
 // ===============================
 
-
-// -------------------------------
-// CONFIG
-// -------------------------------
 const API_URL = "/smart-parking/api/get_slots.php";
-
 
 // -------------------------------
 // DATE & TIME
@@ -35,37 +30,25 @@ function updateDateTime() {
 updateDateTime();
 setInterval(updateDateTime, 1000);
 
-
 // -------------------------------
-// SAFE UI UPDATE FUNCTION
+// SAFE UI UPDATE
 // -------------------------------
 function safeSet(id, value) {
     const el = document.getElementById(id);
-    if (el) {
-        el.innerText = value;
-    }
+    if (el) el.innerText = value;
 }
 
-
 // -------------------------------
-// LOAD PARKING SLOTS
+// LOAD SLOTS
 // -------------------------------
 function loadSlots() {
 
-    console.log("Fetching slots...");
-
     fetch(API_URL)
         .then(res => {
-
-            if (!res.ok) {
-                throw new Error("HTTP Error: " + res.status);
-            }
-
+            if (!res.ok) throw new Error("HTTP Error: " + res.status);
             return res.json();
         })
         .then(data => {
-
-            console.log("DATA RECEIVED:", data);
 
             let occupied = 0;
             let total = data.length;
@@ -73,73 +56,56 @@ function loadSlots() {
             data.forEach(slot => {
 
                 const slotDiv = document.getElementById("slot" + slot.slot_id);
-
-                if (!slotDiv) {
-                    console.log("Missing slot element:", slot.slot_id);
-                    return;
-                }
+                if (!slotDiv) return;
 
                 const button = slotDiv.querySelector("button");
 
-                if (slot.status == 1) {
+                // ✅ FIXED LOGIC
+                if (slot.status == 0) {
 
+                    // OCCUPIED
                     slotDiv.className = "slot occupied";
-
                     if (button) button.innerText = "OCCUPIED";
-
                     occupied++;
 
                 } else {
 
+                    // AVAILABLE
                     slotDiv.className = "slot available";
-
                     if (button) button.innerText = "AVAILABLE";
                 }
             });
 
             let available = total - occupied;
+            let rate = total > 0 ? Math.round((occupied / total) * 100) : 0;
 
-            let rate = total > 0
-                ? Math.round((occupied / total) * 100)
-                : 0;
-
-            // -------------------------------
-            // SAFE UI UPDATES
-            // -------------------------------
             safeSet('occupied-count', occupied);
             safeSet('available-count', available);
             safeSet('available-slots', available);
             safeSet('occupancy-rate', rate + '%');
 
-            safeSet('parking-status',
-                available === 0 ? "FULL" : "OPEN"
-            );
+            safeSet('parking-status', available === 0 ? "FULL" : "OPEN");
 
-            safeSet('parking-message',
+            safeSet(
+                'parking-message',
                 available === 0
                     ? "No available parking slots"
                     : available + " slots available"
             );
 
-            // Hide loading text safely
             const loadingText = document.getElementById("loading");
-            if (loadingText) {
-                loadingText.style.display = "none";
-            }
+            if (loadingText) loadingText.style.display = "none";
 
         })
         .catch(err => {
-
             console.error("FETCH ERROR:", err);
-
             safeSet('parking-status', "ERROR");
             safeSet('parking-message', "Failed to load parking data");
         });
 }
 
-
 // -------------------------------
-// AUTO REFRESH SYSTEM
+// AUTO REFRESH
 // -------------------------------
 loadSlots();
 setInterval(loadSlots, 2000);
