@@ -55,7 +55,6 @@ body {
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-
 .red-card {
     background: linear-gradient(to right, #ef4444, #dc2626);
 }
@@ -89,7 +88,6 @@ body {
     font-size: 22px;
 }
 
-
 .section-card {
     background: white;
     padding: 30px;
@@ -114,13 +112,36 @@ body {
     padding: 25px;
     text-align: center;
     border: 2px solid #eee;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.slot:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.slot::after {
+    content: 'Click for details';
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: #666;
+}
+
+.slot:hover::after {
+    opacity: 1;
 }
 
 .slot h3 {
     font-size: 28px;
     margin-bottom: 20px;
 }
-
 
 .slot i {
     font-size: 70px;
@@ -134,6 +155,7 @@ body {
     color: white;
     font-size: 18px;
     font-weight: bold;
+    pointer-events: none;
 }
 
 .occupied {
@@ -156,6 +178,296 @@ body {
     background: #16a34a;
 }
 
+/* =====================================================
+   MODAL STYLES
+   ===================================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: white;
+    padding: 35px;
+    border-radius: 25px;
+    max-width: 550px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 35px;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: #333;
+}
+
+.modal-content h2 {
+    font-size: 32px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 25px;
+}
+
+.status-badge.available {
+    background: #d4edda;
+    color: #155724;
+    border: 2px solid #c3e6cb;
+}
+
+.status-badge.occupied {
+    background: #f8d7da;
+    color: #721c24;
+    border: 2px solid #f5c6cb;
+}
+
+.detail-section {
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    border-left: 4px solid #2563eb;
+}
+
+.detail-section h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detail-section p {
+    margin: 8px 0;
+    color: #555;
+    line-height: 1.6;
+}
+
+.detail-section p strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.detail-section.notes {
+    background: #fff3cd;
+    border-left-color: #ffc107;
+}
+
+.detail-section.notes h3 {
+    color: #856404;
+}
+
+.detail-section.features {
+    background: #e7f3ff;
+    border-left-color: #16a34a;
+}
+
+.detail-section.features h3 {
+    color: #16a34a;
+}
+
+.slot-type-badge {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.slot-type-standard {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.slot-type-disabled {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.slot-type-ev {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.slot-type-compact {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.slot-type-womens {
+    background: #fce7f3;
+    color: #9d174d;
+}
+
+/* =====================================================
+   FILTER BAR - DROPDOWN CHECKBOXES
+   ===================================================== */
+
+.filter-bar {
+    background: white;
+    padding: 20px 30px;
+    border-radius: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.filter-dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    padding: 10px 18px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    background: white;
+    color: #444;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.dropdown-toggle:hover {
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+.filter-dropdown.open .dropdown-toggle {
+    border-color: #2563eb;
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+.dropdown-toggle .fa-chevron-down {
+    font-size: 12px;
+    transition: transform 0.2s ease;
+}
+
+.filter-dropdown.open .fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.dropdown-count {
+    font-size: 12px;
+    background: #2563eb;
+    color: white;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 200px;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    z-index: 100;
+    padding: 8px 0;
+    animation: fadeIn 0.15s ease;
+}
+
+.filter-dropdown.open .dropdown-menu {
+    display: block;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #444;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.dropdown-item:hover {
+    background: #f5f6fa;
+}
+
+.dropdown-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #2563eb;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.slot.hidden {
+    display: none;
+}
+
+#filter-label {
+    font-size: 16px;
+    font-weight: normal;
+    color: #666;
+    margin-left: 10px;
+}
 
 .stats-container {
     background: white;
@@ -193,7 +505,6 @@ body {
     background: #ef4444;
 }
 
-
 .green {
     background: #16a34a;
 }
@@ -211,8 +522,11 @@ body {
     font-size: 50px;
 }
 
-@media(max-width: 768px) {
+/* =====================================================
+   RESPONSIVE DESIGN
+   ===================================================== */
 
+@media(max-width: 768px) {
     body {
         padding: 15px;
     }
@@ -229,5 +543,18 @@ body {
 
     .status-card h1 {
         font-size: 40px;
+    }
+
+    .modal-content {
+        padding: 25px;
+        width: 95%;
+    }
+
+    .modal-content h2 {
+        font-size: 26px;
+    }
+
+    .slot::after {
+        display: none;
     }
 }

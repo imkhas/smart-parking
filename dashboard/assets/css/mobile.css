@@ -1,0 +1,84 @@
+/* ===============================
+   SMART PARKING - MOBILE VIEW
+   =============================== */
+
+body {
+    padding: 10px;
+}
+
+/* Container */
+.container {
+    max-width: 100%;
+    padding: 10px;
+}
+
+/* HEADER */
+.header {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+}
+
+/* DASHBOARD GRID */
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* SLOT GRID → SINGLE COLUMN */
+.slot-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+/* SLOT CARD */
+.slot {
+    padding: 15px;
+    font-size: 14px;
+    border-radius: 10px;
+}
+
+/* BUTTON inside slot */
+.slot button {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+}
+
+/* STATS CARDS */
+.stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* MAKE TEXT SMALLER */
+h1 {
+    font-size: 20px;
+}
+
+h2 {
+    font-size: 16px;
+}
+
+h3 {
+    font-size: 14px;
+}
+
+/* MODAL (VERY IMPORTANT FOR MOBILE) */
+.modal-content {
+    width: 95%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+/* CLOSE BUTTON */
+.close-btn {
+    font-size: 22px;
+    top: 10px;
+    right: 15px;
+}

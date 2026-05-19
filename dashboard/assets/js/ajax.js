@@ -1,55 +1,76 @@
-// ================================================
-// SMART PARKING REAL-TIME DASHBOARD
-// ================================================
-
 const API_BASE_URL = "/smart-parking/api/";
 const UPDATE_INTERVAL = 2000;
 
-// -------------------------------
-// SAFE DOM UPDATE
-// -------------------------------
 function safeSet(id, value) {
     const el = document.getElementById(id);
     if (el) el.innerText = value;
 }
 
-// -------------------------------
-// FETCH SLOTS
-// -------------------------------
-function fetchSlots() {
+function getActiveFilters() {
+    const filters = {};
+    document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+        const key = dropdown.dataset.filter;
+        const checked = [];
+        dropdown.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+            checked.push(cb.value);
+        });
+        if (checked.length) {
+            filters[key] = checked;
+        }
+    });
+    return filters;
+}
 
-    fetch(API_BASE_URL + "get_slots.php")
+function buildFilterQuery() {
+    const filters = getActiveFilters();
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([k, vals]) => {
+        vals.forEach(v => params.append(k + '[]', v));
+    });
+    const qs = params.toString();
+    return qs ? '?' + qs : '';
+}
+
+function updateDropdownCounts() {
+    document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+        const count = dropdown.querySelectorAll('input[type="checkbox"]:checked').length;
+        const badge = dropdown.querySelector('.dropdown-count');
+        if (badge) {
+            badge.textContent = count ? '(' + count + ')' : '';
+        }
+    });
+}
+
+function fetchSlots() {
+    const qs = buildFilterQuery();
+
+    fetch(API_BASE_URL + "get_slots.php" + qs)
         .then(res => {
             if (!res.ok) throw new Error("HTTP Error: " + res.status);
             return res.json();
         })
         .then(slots => {
-
             updateSlotsUI(slots);
             updateStatsFromSlots(slots);
-
         })
         .catch(err => {
             console.error("Error fetching slots:", err);
         });
 }
 
-// -------------------------------
-// UPDATE SLOT UI
-// -------------------------------
 function updateSlotsUI(slots) {
+    document.querySelectorAll('.slot').forEach(el => el.classList.add('hidden'));
 
     slots.forEach(slot => {
-
-        const el = document.getElementById("slot" + slot.slot_id);
+        const el = document.getElementById("slot" + slot.sensor_id);
         if (!el) return;
 
-        const btn = el.querySelector("button");
+        el.classList.remove('hidden');
 
-        // 0 = occupied, 1 = available
+        const btn = el.querySelector("button");
         const isOccupied = (slot.status == 0);
 
-        el.className = isOccupied ? "slot occupied" : "slot available";
+        el.className = "slot" + (isOccupied ? " occupied" : " available");
 
         if (btn) {
             btn.innerText = isOccupied ? "OCCUPIED" : "AVAILABLE";
@@ -57,18 +78,12 @@ function updateSlotsUI(slots) {
     });
 }
 
-// -------------------------------
-// STATS CALCULATION
-// -------------------------------
 function updateStatsFromSlots(slots) {
-
     let occupied = 0;
     let total = slots.length;
 
     slots.forEach(s => {
-        if (s.status == 0) {
-            occupied++; // 0 = occupied
-        }
+        if (s.status == 0) occupied++;
     });
 
     let available = total - occupied;
@@ -89,13 +104,42 @@ function updateStatsFromSlots(slots) {
     );
 }
 
-// -------------------------------
-// START
-// -------------------------------
-document.addEventListener("DOMContentLoaded", function () {
+// Close all dropdowns
+function closeAllDropdowns() {
+    document.querySelectorAll('.filter-dropdown.open').forEach(d => d.classList.remove('open'));
+}
+
+// Toggle dropdown on click
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const dropdown = this.closest('.filter-dropdown');
+            const isOpen = dropdown.classList.contains('open');
+
+            closeAllDropdowns();
+
+            if (!isOpen) {
+                dropdown.classList.add('open');
+            }
+        });
+    });
+
+    // Re-fetch on checkbox change
+    document.querySelectorAll('.filter-dropdown input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', function () {
+            updateDropdownCounts();
+            fetchSlots();
+        });
+    });
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', function () {
+        closeAllDropdowns();
+    });
 
     console.log("Dashboard JS Loaded ✔");
-
+    updateDropdownCounts();
     fetchSlots();
     setInterval(fetchSlots, UPDATE_INTERVAL);
 });

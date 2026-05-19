@@ -2,16 +2,6 @@
 header('Content-Type: application/json');
 include 'includes/db_connect.php';
 
-// Log for debugging
-file_put_contents('logs/post_raw.log', 
-    date('Y-m-d H:i:s') . " - RAW: " . file_get_contents('php://input') . "\n", 
-    FILE_APPEND
-);
-file_put_contents('logs/post_parsed.log', 
-    date('Y-m-d H:i:s') . " - POST: " . print_r($_POST, true) . "\n", 
-    FILE_APPEND
-);
-
 if (!isset($_POST['data'])) {
     echo json_encode(['code' => 400, 'message' => 'Missing data parameter']);
     exit;
@@ -41,22 +31,26 @@ foreach ($entries as $entry) {
         $slot_id = $sid - 199;
         $status = intval($value);  // 0=occupied, 1=available
         
+        // Debounce: skip if last change was < 3 seconds ago
+        $check = $conn->prepare("SELECT UNIX_TIMESTAMP(timestamp) FROM sensor_data WHERE sensor_id = ?");
+        $check->bind_param("i", $slot_id);
+        $check->execute();
+        $check->bind_result($cur_ts);
+        $check->fetch();
+        $check->close();
+        
+        if ($cur_ts && ($timestamp - $cur_ts) < 3) {
+            continue;
+        }
+        
         // Update database
         $stmt = $conn->prepare("UPDATE sensor_data SET status = ?, timestamp = FROM_UNIXTIME(?) WHERE sensor_id = ?");
         $stmt->bind_param("iii", $status, $timestamp, $slot_id);
         
         if ($stmt->execute()) {
             $success++;
-            file_put_contents('logs/updates.log', 
-                date('Y-m-d H:i:s') . " - Slot $slot_id status=$status\n", 
-                FILE_APPEND
-            );
         } else {
             $errors++;
-            file_put_contents('logs/errors.log', 
-                date('Y-m-d H:i:s') . " - Error: " . $stmt->error . "\n", 
-                FILE_APPEND
-            );
         }
         $stmt->close();
     } else {

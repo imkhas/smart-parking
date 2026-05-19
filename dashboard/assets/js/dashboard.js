@@ -1,16 +1,7 @@
-// ===============================
-// SMART PARKING DASHBOARD JS
-// ===============================
+const SLOT_DETAILS_URL = "/smart-parking/api/get_slot_details.php";
 
-const API_URL = "/smart-parking/api/get_slots.php";
-
-// -------------------------------
-// DATE & TIME
-// -------------------------------
 function updateDateTime() {
-
     const now = new Date();
-
     const options = {
         year: 'numeric',
         month: 'long',
@@ -19,93 +10,93 @@ function updateDateTime() {
         minute: '2-digit',
         second: '2-digit'
     };
-
     const timeEl = document.getElementById('datetime');
-
     if (timeEl) {
-        timeEl.innerHTML = now.toLocaleDateString('en-US', options);
+        timeEl.innerHTML = now.toLocaleString('en-US', options);
     }
 }
 
 updateDateTime();
 setInterval(updateDateTime, 1000);
 
-// -------------------------------
-// SAFE UI UPDATE
-// -------------------------------
-function safeSet(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.innerText = value;
-}
-
-// -------------------------------
-// LOAD SLOTS
-// -------------------------------
-function loadSlots() {
-
-    fetch(API_URL)
-        .then(res => {
-            if (!res.ok) throw new Error("HTTP Error: " + res.status);
-            return res.json();
-        })
-        .then(data => {
-
-            let occupied = 0;
-            let total = data.length;
-
-            data.forEach(slot => {
-
-                const slotDiv = document.getElementById("slot" + slot.slot_id);
-                if (!slotDiv) return;
-
-                const button = slotDiv.querySelector("button");
-
-                // ✅ FIXED LOGIC
-                if (slot.status == 0) {
-
-                    // OCCUPIED
-                    slotDiv.className = "slot occupied";
-                    if (button) button.innerText = "OCCUPIED";
-                    occupied++;
-
-                } else {
-
-                    // AVAILABLE
-                    slotDiv.className = "slot available";
-                    if (button) button.innerText = "AVAILABLE";
-                }
-            });
-
-            let available = total - occupied;
-            let rate = total > 0 ? Math.round((occupied / total) * 100) : 0;
-
-            safeSet('occupied-count', occupied);
-            safeSet('available-count', available);
-            safeSet('available-slots', available);
-            safeSet('occupancy-rate', rate + '%');
-
-            safeSet('parking-status', available === 0 ? "FULL" : "OPEN");
-
-            safeSet(
-                'parking-message',
-                available === 0
-                    ? "No available parking slots"
-                    : available + " slots available"
-            );
-
-            const loadingText = document.getElementById("loading");
-            if (loadingText) loadingText.style.display = "none";
-
+function showSlotDetails(slotId) {
+    fetch(SLOT_DETAILS_URL + '?slot_id=' + slotId)
+        .then(res => res.json())
+        .then(response => {
+            if (response.success) {
+                displayModal(response.data);
+            } else {
+                alert(response.error || "Error loading slot");
+            }
         })
         .catch(err => {
-            console.error("FETCH ERROR:", err);
-            safeSet('parking-status', "ERROR");
-            safeSet('parking-message', "Failed to load parking data");
+            console.error(err);
+            alert("Failed to load slot details");
         });
 }
 
-// -------------------------------
-// AUTO REFRESH
-// -------------------------------
-loadSlots();
-setInterval(loadSlots, 2000);
+function displayModal(data) {
+    const statusText = data.status == 0 ? 'OCCUPIED' : 'AVAILABLE';
+    const statusClass = data.status == 0 ? 'occupied' : 'available';
+
+    let slotTypeClass = 'slot-type-standard';
+    const type = (data.slot_type || '').toLowerCase();
+    if (type.includes('disabled')) slotTypeClass = 'slot-type-disabled';
+    else if (type.includes('ev')) slotTypeClass = 'slot-type-ev';
+    else if (type.includes('compact')) slotTypeClass = 'slot-type-compact';
+    else if (type.includes('women')) slotTypeClass = 'slot-type-womens';
+
+    const modal = `
+        <div class="modal-overlay" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+
+                <h2>
+                    ${data.slot_name || 'Slot ' + data.sensor_id}
+                    <span class="slot-type-badge ${slotTypeClass}">
+                        ${data.slot_type || 'Standard'}
+                    </span>
+                </h2>
+
+                <span class="status-badge ${statusClass}">${statusText}</span>
+
+                <div class="detail-section">
+                    <h3><i class="fa-solid fa-location-dot"></i> Location</h3>
+                    <p><strong>Level:</strong> ${data.level}</p>
+                    <p><strong>Zone:</strong> ${data.zone}</p>
+                    <p><strong>Location:</strong> ${data.location}</p>
+
+                    <h3><i class="fa-solid fa-info-circle"></i> Slot Info</h3>
+                    <p><strong>Type:</strong> ${data.slot_type}</p>
+
+                    <h3><i class="fa-solid fa-clock"></i> Last Updated</h3>
+                    <p>${data.timestamp || 'N/A'}</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modal);
+}
+
+function closeModal() {
+    const modal = document.querySelector('.modal-overlay');
+    if (modal) modal.remove();
+}
+
+function initializeSlotClickHandlers() {
+    document.querySelectorAll('.slot').forEach(slot => {
+        slot.addEventListener('click', function () {
+            const slotId = this.id.replace('slot', '');
+            showSlotDetails(slotId);
+        });
+    });
+}
+
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeModal();
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    initializeSlotClickHandlers();
+});
