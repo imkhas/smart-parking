@@ -1,10 +1,7 @@
 <?php
 header('Content-Type: application/json');
+include '../includes/health_config.php';
 include '../includes/db_connect.php';
-
-$OFFLINE_THRESHOLD = 48;
-$OVERSTAY_THRESHOLD = 24;
-$FLAP_THRESHOLD = 10;
 
 $now = time();
 
@@ -28,10 +25,10 @@ while ($row = $result->fetch_assoc()) {
     $health = 'online';
     $alert = '';
 
-    if ($hours_ago > $OFFLINE_THRESHOLD) {
+    if ($hours_ago > OFFLINE_THRESHOLD) {
         $health = 'offline';
         $alert = "No data for " . round($hours_ago, 1) . " hours";
-    } elseif ($status == 0 && $hours_ago > $OVERSTAY_THRESHOLD) {
+    } elseif ($status == 0 && $hours_ago > OVERSTAY_THRESHOLD) {
         $health = 'overstay';
         $alert = "Occupied for " . round($hours_ago, 1) . " hours";
     }

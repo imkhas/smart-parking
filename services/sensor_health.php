@@ -2,10 +2,7 @@
 // Run via cron: 0 * * * *  www-data  php /var/www/html/smart-parking/services/sensor_health.php
 // Checks sensor health and logs issues
 
-define('OFFLINE_THRESHOLD', 48);
-define('OVERSTAY_THRESHOLD', 24);
-define('LOG_FILE', __DIR__ . '/../logs/sensor_health.log');
-
+include __DIR__ . '/../includes/health_config.php';
 include __DIR__ . '/../includes/db_connect.php';
 
 $now = time();
