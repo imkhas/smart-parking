@@ -56,6 +56,9 @@ IR Sensors → Arduino Uno → BLE (AT-09 module) → Linux Gateway (C) → HTTP
 
 ```
 smart-parking/
+├── admin.php                # Admin panel (login protected, sensor health, override)
+├── sensor_data.php          # POST endpoint: receives data from gateway
+│
 ├── 11_gateway_POST/        # Linux BLE gateway (C application)
 │   ├── compile.sh          # Build script (gcc + dbus-1)
 │   ├── gateway_POST        # Compiled binary
@@ -81,6 +84,7 @@ smart-parking/
 ├── api/                     # REST API endpoints
 │   ├── get_slots.php        # GET: returns slot status (supports ?status[], ?type[], ?level[] filters)
 │   ├── get_slot_details.php # GET: returns single slot details for modal (?slot_id=)
+│   ├── get_sensor_health.php# GET: sensor health check (online/offline/overstay)
 │   ├── update_slot.php      # GET: manual slot status update (?slot_id=&status=)
 │   └── get_statistics.php   # (empty)
 │
@@ -100,9 +104,8 @@ smart-parking/
 │   └── db_connect.php       # MySQL connection (edit credentials here)
 │
 ├── services/
-│   └── serial_reader.php    # Alternative: USB serial daemon
-│
-├── sensor_data.php          # POST endpoint: receives data from gateway
+│   ├── serial_reader.php    # Alternative: USB serial daemon
+│   └── sensor_health.php    # Background health check (run via cron)
 │
 ├── logs/                    # System logs
 └── README.md                # This file
@@ -202,6 +205,42 @@ Access at: `http://localhost/smart-parking/dashboard/index.php`
 
 ---
 
+## Admin Panel
+
+Access at: `http://localhost/smart-parking/admin.php`
+
+Default credentials: `admin` / `admin123`
+
+### Features
+
+| Feature | Description |
+|---------|-------------|
+| **Sensor Health** | Real-time status of all sensors (online/offline/overstay) |
+| **Manual Override** | Force a slot status change for maintenance |
+| **Offline Detection** | Alerts when a sensor hasn't reported in 48+ hours |
+| **Overstay Detection** | Alerts when a slot is occupied for 24+ hours |
+
+### Sensor Health Thresholds
+
+| Condition | Threshold | Health Status |
+|-----------|-----------|---------------|
+| No data in 48+ hours | 48h | 🔴 `OFFLINE` |
+| Occupied for 24+ hours | 24h | 🟡 `OVERSTAY` |
+| Normal operation | — | 🟢 `ONLINE` |
+
+### Background Health Check (Cron)
+
+Set up an hourly cron job to log sensor issues:
+
+```bash
+# /etc/cron.d/smart-parking
+0 * * * *   www-data   php /var/www/html/smart-parking/services/sensor_health.php
+```
+
+Logs are written to `logs/sensor_health.log`.
+
+---
+
 ## API
 
 ### GET /api/get_slots.php
@@ -237,6 +276,30 @@ Returns details for a single slot.
 | Parameter | Type | Required |
 |-----------|------|----------|
 | `slot_id` | int | Yes |
+
+### GET /api/get_sensor_health.php
+
+Returns health status for all sensors (used by admin panel).
+
+Response:
+```json
+{
+  "sensors": [
+    {
+      "sensor_id": 1,
+      "status": 0,
+      "health": "online",
+      "alert": "",
+      "hours_ago": 1.5
+    }
+  ],
+  "summary": {
+    "online": 3,
+    "offline": 0,
+    "overstay": 1
+  }
+}
+```
 
 ### POST /sensor_data.php
 

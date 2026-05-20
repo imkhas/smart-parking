@@ -43,8 +43,8 @@ function displayModal(data) {
     const type = (data.slot_type || '').toLowerCase();
     if (type.includes('disabled')) slotTypeClass = 'slot-type-disabled';
     else if (type.includes('ev')) slotTypeClass = 'slot-type-ev';
-    else if (type.includes('compact')) slotTypeClass = 'slot-type-compact';
     else if (type.includes('women')) slotTypeClass = 'slot-type-womens';
+    else if (type.includes('compact')) slotTypeClass = 'slot-type-compact';
 
     const modal = `
         <div class="modal-overlay" onclick="closeModal()">
@@ -65,10 +65,14 @@ function displayModal(data) {
                     <p><strong>Level:</strong> ${data.level}</p>
                     <p><strong>Zone:</strong> ${data.zone}</p>
                     <p><strong>Location:</strong> ${data.location}</p>
+                </div>
 
+                <div class="detail-section">
                     <h3><i class="fa-solid fa-info-circle"></i> Slot Info</h3>
                     <p><strong>Type:</strong> ${data.slot_type}</p>
+                </div>
 
+                <div class="detail-section">
                     <h3><i class="fa-solid fa-clock"></i> Last Updated</h3>
                     <p>${data.timestamp || 'N/A'}</p>
                 </div>

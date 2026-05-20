@@ -13,17 +13,22 @@
 </head>
 <body>
 
-<div class="container">
-
-    <!-- HEADER -->
-    <div class="header">
-        <h1>Smart Parking Dashboard</h1>
-
+<nav class="navbar">
+    <div class="nav-left">
+        <h1><i class="fa-solid fa-square-parking"></i> LEGA Smart-Parking</h1>
+    </div>
+    <div class="nav-right">
         <div class="datetime">
             <i class="fa-solid fa-calendar-days"></i>
             <span id="datetime"></span>
         </div>
+        <a href="../admin.php" class="admin-link" title="Admin Panel">
+            <i class="fa-solid fa-gear"></i>
+        </a>
     </div>
+</nav>
+
+<div class="container">
 
     <!-- TOP STATUS CARDS -->
     <div class="top-cards">
@@ -153,6 +158,10 @@
     </div>
 
 </div>
+
+<footer class="footer">
+    <p>© 2026 LEGA Company. Smart Parking System. All rights reserved.</p>
+</footer>
 
 <!-- JavaScript Files -->
 <script src="assets/js/dashboard.js"></script>

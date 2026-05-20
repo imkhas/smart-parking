@@ -104,13 +104,11 @@ function updateStatsFromSlots(slots) {
     );
 }
 
-// Close all dropdowns
 function closeAllDropdowns() {
     document.querySelectorAll('.filter-dropdown.open').forEach(d => d.classList.remove('open'));
 }
 
-// Toggle dropdown on click
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
         toggle.addEventListener('click', function (e) {
             e.stopPropagation();
@@ -125,7 +123,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Re-fetch on checkbox change
     document.querySelectorAll('.filter-dropdown input[type="checkbox"]').forEach(cb => {
         cb.addEventListener('change', function () {
             updateDropdownCounts();
@@ -133,7 +130,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Close dropdowns on outside click
     document.addEventListener('click', function () {
         closeAllDropdowns();
     });

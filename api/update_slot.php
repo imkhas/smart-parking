@@ -11,7 +11,7 @@ if ($slot_id !== null && $status !== null) {
     $stmt = $conn->prepare("
         UPDATE sensor_data 
         SET status = ? 
-        WHERE slot_id = ?
+        WHERE sensor_id = ?
     ");
 
     $stmt->bind_param("ii", $status, $slot_id);
