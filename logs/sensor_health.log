@@ -1,63 +1,181 @@
-[2026-05-20 14:54:01] SENSOR #1 OFFLINE — No data for 22.2 hours
-[2026-05-20 14:54:01] SENSOR #2 OFFLINE — No data for 3.1 hours
-[2026-05-20 14:54:01] SENSOR #3 OFFLINE — No data for 2.8 hours
-[2026-05-20 14:54:01] SENSOR #4 OFFLINE — No data for 21.9 hours
-[2026-05-20 14:55:01] SENSOR #1 OFFLINE — No data for 22.2 hours
-[2026-05-20 14:55:01] SENSOR #2 OFFLINE — No data for 3.1 hours
-[2026-05-20 14:55:01] SENSOR #4 OFFLINE — No data for 22.0 hours
-[2026-05-20 14:56:01] SENSOR #1 OFFLINE — No data for 22.2 hours
-[2026-05-20 14:56:01] SENSOR #2 OFFLINE — No data for 3.1 hours
-[2026-05-20 14:56:01] SENSOR #4 OFFLINE — No data for 22.0 hours
-[2026-05-20 14:57:01] SENSOR #1 OFFLINE — No data for 22.2 hours
-[2026-05-20 14:57:01] SENSOR #2 OFFLINE — No data for 3.1 hours
-[2026-05-20 14:57:01] SENSOR #4 OFFLINE — No data for 22.0 hours
-[2026-05-20 14:58:01] SENSOR #1 OFFLINE — No data for 22.2 hours
-[2026-05-20 14:58:01] SENSOR #2 OFFLINE — No data for 3.1 hours
-[2026-05-20 14:58:01] SENSOR #4 OFFLINE — No data for 22.0 hours
-[2026-05-20 14:59:01] SENSOR #1 OFFLINE — No data for 22.3 hours
-[2026-05-20 14:59:01] SENSOR #2 OFFLINE — No data for 3.1 hours
-[2026-05-20 14:59:01] SENSOR #4 OFFLINE — No data for 22.0 hours
-[2026-05-20 15:00:01] SENSOR #1 OFFLINE — No data for 22.3 hours
-[2026-05-20 15:00:01] SENSOR #2 OFFLINE — No data for 3.2 hours
-[2026-05-20 15:00:01] SENSOR #4 OFFLINE — No data for 22.0 hours
-[2026-05-20 15:00:11] SENSOR #1 OFFLINE — No data for 22.3 hours
-[2026-05-20 15:00:12] SENSOR #2 OFFLINE — No data for 3.2 hours
-[2026-05-20 15:00:12] SENSOR #4 OFFLINE — No data for 22.1 hours
-[2026-05-20 15:01:01] SENSOR #1 OFFLINE — No data for 22.3 hours
-[2026-05-20 15:01:01] SENSOR #2 OFFLINE — No data for 3.2 hours
-[2026-05-20 15:01:01] SENSOR #4 OFFLINE — No data for 22.1 hours
-[2026-05-20 15:02:01] SENSOR #1 OFFLINE — No data for 22.3 hours
-[2026-05-20 15:02:01] SENSOR #2 OFFLINE — No data for 3.2 hours
-[2026-05-20 15:02:01] SENSOR #4 OFFLINE — No data for 22.1 hours
-[2026-05-20 15:03:01] SENSOR #1 OFFLINE — No data for 22.3 hours
-[2026-05-20 15:03:01] SENSOR #2 OFFLINE — No data for 3.2 hours
-[2026-05-20 15:03:01] SENSOR #4 OFFLINE — No data for 22.1 hours
-[2026-05-20 15:04:01] SENSOR #1 OFFLINE — No data for 22.3 hours
-[2026-05-20 15:04:01] SENSOR #2 OFFLINE — No data for 3.2 hours
-[2026-05-20 15:04:01] SENSOR #4 OFFLINE — No data for 22.1 hours
-[2026-05-20 15:07:01] SENSOR #3 OVERSTAY — Occupied for 0.0 hours
-[2026-05-20 15:08:01] SENSOR #3 OVERSTAY — Occupied for 0.0 hours
-[2026-05-20 15:09:01] SENSOR #3 OVERSTAY — Occupied for 0.1 hours
-[2026-05-20 15:10:01] SENSOR #3 OVERSTAY — Occupied for 0.1 hours
-[2026-05-20 15:11:01] SENSOR #3 OVERSTAY — Occupied for 0.1 hours
-[2026-05-20 15:12:01] SENSOR #3 OVERSTAY — Occupied for 0.1 hours
-[2026-05-20 15:13:01] SENSOR #3 OVERSTAY — Occupied for 0.1 hours
-[2026-05-20 15:14:02] SENSOR #3 OVERSTAY — Occupied for 0.1 hours
-[2026-05-20 15:15:01] SENSOR #3 OVERSTAY — Occupied for 0.2 hours
-[2026-05-20 15:16:01] SENSOR #3 OVERSTAY — Occupied for 0.2 hours
-[2026-05-20 15:17:01] SENSOR #3 OVERSTAY — Occupied for 0.2 hours
-[2026-05-20 15:18:01] SENSOR #3 OVERSTAY — Occupied for 0.2 hours
-[2026-05-20 15:19:01] SENSOR #3 OVERSTAY — Occupied for 0.2 hours
-[2026-05-20 15:20:01] SENSOR #3 OVERSTAY — Occupied for 0.2 hours
-[2026-05-20 15:21:01] SENSOR #3 OVERSTAY — Occupied for 0.3 hours
-[2026-05-20 15:22:01] SENSOR #3 OVERSTAY — Occupied for 0.3 hours
-[2026-05-20 15:23:01] SENSOR #3 OVERSTAY — Occupied for 0.3 hours
-[2026-05-20 15:24:01] SENSOR #3 OVERSTAY — Occupied for 0.3 hours
-[2026-05-20 15:25:01] SENSOR #3 OVERSTAY — Occupied for 0.3 hours
-[2026-05-20 15:26:01] SENSOR #3 OVERSTAY — Occupied for 0.3 hours
-[2026-05-20 15:27:01] SENSOR #3 OVERSTAY — Occupied for 0.4 hours
-[2026-05-20 15:28:01] SENSOR #3 OVERSTAY — Occupied for 0.4 hours
-[2026-05-20 15:29:01] SENSOR #3 OVERSTAY — Occupied for 0.4 hours
-[2026-05-20 15:30:01] SENSOR #3 OVERSTAY — Occupied for 0.4 hours
-[2026-05-20 15:31:01] SENSOR #3 OVERSTAY — Occupied for 0.4 hours
-[2026-05-20 15:32:01] SENSOR #3 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 11:25:01] SENSOR #1 OFFLINE — No data for 42.7 hours
+[2026-05-21 11:26:01] SENSOR #1 OFFLINE — No data for 42.7 hours
+[2026-05-21 11:27:01] SENSOR #1 OFFLINE — No data for 42.7 hours
+[2026-05-21 11:28:01] SENSOR #1 OFFLINE — No data for 42.7 hours
+[2026-05-21 11:29:01] SENSOR #1 OFFLINE — No data for 42.8 hours
+[2026-05-21 11:30:01] SENSOR #1 OFFLINE — No data for 42.8 hours
+[2026-05-21 11:31:02] SENSOR #1 OFFLINE — No data for 42.8 hours
+[2026-05-21 11:32:01] SENSOR #1 OFFLINE — No data for 42.8 hours
+[2026-05-21 11:33:01] SENSOR #1 OFFLINE — No data for 42.8 hours
+[2026-05-21 11:34:01] SENSOR #1 OFFLINE — No data for 42.8 hours
+[2026-05-21 11:35:01] SENSOR #1 OFFLINE — No data for 42.9 hours
+[2026-05-21 11:36:01] SENSOR #1 OFFLINE — No data for 42.9 hours
+[2026-05-21 11:37:01] SENSOR #1 OFFLINE — No data for 42.9 hours
+[2026-05-21 11:38:01] SENSOR #1 OFFLINE — No data for 42.9 hours
+[2026-05-21 11:39:01] SENSOR #1 OFFLINE — No data for 42.9 hours
+[2026-05-21 11:40:01] SENSOR #1 OFFLINE — No data for 42.9 hours
+[2026-05-21 11:41:01] SENSOR #1 OFFLINE — No data for 43.0 hours
+[2026-05-21 11:42:01] SENSOR #1 OFFLINE — No data for 43.0 hours
+[2026-05-21 11:43:01] SENSOR #1 OFFLINE — No data for 43.0 hours
+[2026-05-21 11:44:01] SENSOR #1 OFFLINE — No data for 43.0 hours
+[2026-05-21 11:45:01] SENSOR #1 OFFLINE — No data for 43.0 hours
+[2026-05-21 11:46:01] SENSOR #1 OFFLINE — No data for 43.0 hours
+[2026-05-21 11:47:01] SENSOR #1 OFFLINE — No data for 43.1 hours
+[2026-05-21 11:48:01] SENSOR #1 OFFLINE — No data for 43.1 hours
+[2026-05-21 11:49:02] SENSOR #1 OFFLINE — No data for 43.1 hours
+[2026-05-21 11:50:01] SENSOR #1 OFFLINE — No data for 43.1 hours
+[2026-05-21 13:01:01] SENSOR #1 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:02:01] SENSOR #1 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:03:01] SENSOR #1 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:03:01] SENSOR #2 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:04:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:04:01] SENSOR #2 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:05:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:05:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:06:02] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:06:02] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:07:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:07:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:08:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:10:01] SENSOR #1 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:11:01] SENSOR #1 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:12:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:13:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:14:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:15:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:16:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:17:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:18:01] SENSOR #1 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 13:19:01] SENSOR #1 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 13:20:01] SENSOR #1 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 13:20:01] SENSOR #2 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:21:01] SENSOR #1 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 13:21:01] SENSOR #2 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:22:01] SENSOR #1 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 13:22:01] SENSOR #2 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:23:01] SENSOR #1 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 13:23:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:24:01] SENSOR #1 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 13:24:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:25:01] SENSOR #1 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 13:25:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:26:01] SENSOR #1 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 13:26:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:27:01] SENSOR #1 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 13:27:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:28:02] SENSOR #1 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 13:28:02] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:29:01] SENSOR #1 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 13:29:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 13:30:01] SENSOR #1 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 13:30:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 13:31:01] SENSOR #1 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 13:31:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 13:32:01] SENSOR #1 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 13:32:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 13:33:01] SENSOR #1 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 13:33:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 13:34:01] SENSOR #1 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 13:34:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 13:35:01] SENSOR #1 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 13:35:01] SENSOR #2 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 13:36:01] SENSOR #1 OVERSTAY — Occupied for 0.5 hours
+[2026-05-21 13:36:01] SENSOR #2 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 13:37:01] SENSOR #1 OVERSTAY — Occupied for 0.5 hours
+[2026-05-21 13:37:01] SENSOR #2 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 13:38:01] SENSOR #1 OVERSTAY — Occupied for 0.5 hours
+[2026-05-21 13:38:01] SENSOR #2 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 13:39:01] SENSOR #1 OVERSTAY — Occupied for 0.5 hours
+[2026-05-21 13:39:01] SENSOR #2 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 13:40:01] SENSOR #1 OVERSTAY — Occupied for 0.5 hours
+[2026-05-21 13:40:01] SENSOR #2 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 13:41:01] SENSOR #1 OVERSTAY — Occupied for 0.5 hours
+[2026-05-21 13:41:01] SENSOR #2 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 13:43:01] SENSOR #2 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:44:01] SENSOR #2 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:45:01] SENSOR #1 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:45:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:46:01] SENSOR #1 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:46:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:47:01] SENSOR #1 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:47:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:49:02] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:49:02] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:50:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:50:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:51:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:52:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:53:01] SENSOR #1 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 13:55:01] SENSOR #2 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:57:01] SENSOR #2 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 13:59:01] SENSOR #2 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 14:00:01] SENSOR #2 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 14:01:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 14:02:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 14:03:02] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 14:04:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 14:05:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 14:06:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 14:07:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 14:08:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 14:09:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 14:10:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 14:11:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 14:12:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 14:13:01] SENSOR #2 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 14:14:01] SENSOR #2 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 14:15:01] SENSOR #2 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 14:16:01] SENSOR #2 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 14:17:01] SENSOR #2 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 14:18:01] SENSOR #2 OVERSTAY — Occupied for 0.3 hours
+[2026-05-21 14:19:02] SENSOR #2 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 14:20:01] SENSOR #2 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 14:21:01] SENSOR #2 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 14:22:01] SENSOR #2 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 14:23:01] SENSOR #2 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 14:24:01] SENSOR #2 OVERSTAY — Occupied for 0.4 hours
+[2026-05-21 14:25:01] SENSOR #2 OVERSTAY — Occupied for 0.5 hours
+[2026-05-21 14:26:01] SENSOR #2 OVERSTAY — Occupied for 0.5 hours
+[2026-05-21 14:27:01] SENSOR #2 OVERSTAY — Occupied for 0.5 hours
+[2026-05-21 14:28:01] SENSOR #2 OVERSTAY — Occupied for 0.5 hours
+[2026-05-21 14:29:01] SENSOR #2 OVERSTAY — Occupied for 0.5 hours
+[2026-05-21 14:30:01] SENSOR #2 OVERSTAY — Occupied for 0.5 hours
+[2026-05-21 14:31:01] SENSOR #2 OVERSTAY — Occupied for 0.6 hours
+[2026-05-21 14:32:01] SENSOR #2 OVERSTAY — Occupied for 0.6 hours
+[2026-05-21 14:33:01] SENSOR #2 OVERSTAY — Occupied for 0.6 hours
+[2026-05-21 14:34:01] SENSOR #2 OVERSTAY — Occupied for 0.6 hours
+[2026-05-21 14:35:01] SENSOR #2 OVERSTAY — Occupied for 0.6 hours
+[2026-05-21 14:36:01] SENSOR #2 OVERSTAY — Occupied for 0.6 hours
+[2026-05-21 14:37:01] SENSOR #2 OVERSTAY — Occupied for 0.7 hours
+[2026-05-21 14:38:02] SENSOR #2 OVERSTAY — Occupied for 0.7 hours
+[2026-05-21 14:39:01] SENSOR #2 OVERSTAY — Occupied for 0.7 hours
+[2026-05-21 14:40:01] SENSOR #2 OVERSTAY — Occupied for 0.7 hours
+[2026-05-21 14:41:01] SENSOR #2 OVERSTAY — Occupied for 0.7 hours
+[2026-05-21 14:42:01] SENSOR #2 OVERSTAY — Occupied for 0.7 hours
+[2026-05-21 14:43:01] SENSOR #2 OVERSTAY — Occupied for 0.8 hours
+[2026-05-21 14:44:01] SENSOR #2 OVERSTAY — Occupied for 0.8 hours
+[2026-05-21 14:45:01] SENSOR #2 OVERSTAY — Occupied for 0.8 hours
+[2026-05-21 14:46:01] SENSOR #2 OVERSTAY — Occupied for 0.8 hours
+[2026-05-21 14:47:01] SENSOR #2 OVERSTAY — Occupied for 0.8 hours
+[2026-05-21 14:48:01] SENSOR #2 OVERSTAY — Occupied for 0.8 hours
+[2026-05-21 14:49:01] SENSOR #2 OVERSTAY — Occupied for 0.9 hours
+[2026-05-21 14:50:01] SENSOR #2 OVERSTAY — Occupied for 0.9 hours
+[2026-05-21 14:51:01] SENSOR #2 OVERSTAY — Occupied for 0.9 hours
+[2026-05-21 14:52:01] SENSOR #2 OVERSTAY — Occupied for 0.9 hours
+[2026-05-21 14:53:02] SENSOR #2 OVERSTAY — Occupied for 0.9 hours
+[2026-05-21 14:54:01] SENSOR #2 OVERSTAY — Occupied for 0.9 hours
+[2026-05-21 14:55:01] SENSOR #2 OVERSTAY — Occupied for 1.0 hours
+[2026-05-21 14:56:01] SENSOR #2 OVERSTAY — Occupied for 1.0 hours
+[2026-05-21 14:57:01] SENSOR #2 OVERSTAY — Occupied for 1.0 hours
+[2026-05-21 14:59:01] SENSOR #2 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 15:00:01] SENSOR #2 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 15:01:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 15:02:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 15:03:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 15:04:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 15:05:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 15:06:01] SENSOR #2 OVERSTAY — Occupied for 0.1 hours
+[2026-05-21 15:07:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 15:08:01] SENSOR #2 OVERSTAY — Occupied for 0.2 hours
+[2026-05-21 15:23:01] SENSOR #1 OVERSTAY — Occupied for 0.0 hours
+[2026-05-21 15:23:01] SENSOR #3 OVERSTAY — Occupied for 0.0 hours

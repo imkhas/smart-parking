@@ -132,3 +132,71 @@
         }
         .refresh-btn:hover { background: #15803d; 
         }
+        .slot-mgmt-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        @media(max-width: 768px) {
+            .slot-mgmt-grid { grid-template-columns: 1fr; }
+        }
+        .mgmt-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .mgmt-card h3 { margin: 0 0 15px 0; font-size: 18px; }
+        .mgmt-form input,
+        .mgmt-form select {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .mgmt-form input:focus,
+        .mgmt-form select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        .btn-primary {
+            padding: 10px 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn-primary:hover { background: #1d4ed8; }
+        .hint {
+            font-size: 13px;
+            color: #888;
+            margin: 10px 0 0 0;
+        }
+        .edit-btn {
+            padding: 6px 10px;
+            background: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .edit-btn:hover { background: #d97706; }
+        .delete-btn {
+            padding: 6px 10px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .delete-btn:hover { background: #dc2626; }

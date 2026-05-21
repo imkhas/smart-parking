@@ -125,7 +125,7 @@ int main() {
 					strcpy(str,"data=");
 					for(i = 0; i < SENSE_READING_TX_TH; i++) {
 						SENSE_Read(&reading);
-						sprintf(str1, ",%u, %u,%lu,%f;",reading.sid, reading.mid, reading.timestamp, reading.value);
+						sprintf(str1, ",%u,%u,%lu,%f;",reading.sid, reading.mid, reading.timestamp, reading.value);
 						strcat(str, str1);
 					}
 					

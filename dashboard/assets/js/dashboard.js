@@ -88,19 +88,15 @@ function closeModal() {
     if (modal) modal.remove();
 }
 
-function initializeSlotClickHandlers() {
-    document.querySelectorAll('.slot').forEach(slot => {
-        slot.addEventListener('click', function () {
-            const slotId = this.id.replace('slot', '');
-            showSlotDetails(slotId);
-        });
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('slots-container').addEventListener('click', function (e) {
+        const slot = e.target.closest('.slot');
+        if (slot) {
+            showSlotDetails(slot.id.replace('slot', ''));
+        }
     });
-}
+});
 
 document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeModal();
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    initializeSlotClickHandlers();
 });

@@ -29,21 +29,29 @@ CREATE TABLE sensor_data (
 
     sensor_id INT NOT NULL UNIQUE,
 
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    ON UPDATE CURRENT_TIMESTAMP,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     status TINYINT(1) NOT NULL
-    COMMENT '0 = occupied, 1 = available'
+    COMMENT '0 = occupied, 1 = available',
+
+    battery FLOAT DEFAULT NULL
+    COMMENT 'Battery level 0.0–100.0 (%)'
 
 );
 
 -- =====================================================
 -- TABLE: parking_slots
 -- =====================================================
+-- id:       auto-increment primary key
+-- sensor_id: nullable, unique — one sensor per slot max
+-- FK SET NULL so slots survive sensor removal
+-- =====================================================
 
 CREATE TABLE parking_slots (
 
-    sensor_id INT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    sensor_id INT UNIQUE,
 
     slot_name VARCHAR(50) NOT NULL,
 
@@ -57,7 +65,7 @@ CREATE TABLE parking_slots (
 
     FOREIGN KEY (sensor_id)
     REFERENCES sensor_data(sensor_id)
-    ON DELETE CASCADE
+    ON DELETE SET NULL
     ON UPDATE CASCADE
 
 );

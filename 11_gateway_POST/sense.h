@@ -14,11 +14,10 @@ extern "C" {
 #define SENSE_READING_TX_TO		5000		//timeout (ms) before POST occur
 
 typedef enum {
-	MEAS_IR_A,							//0
-	MEAS_IR_B,							//1
-	MEAS_IR_C,							//2
-	MEAS_IR_D,							//3
-}MEAS_SENSE;
+	MEAS_IR,							//0
+	MEAS_Battery,						//1
+}
+MEAS_SENSE;
 
 typedef struct {
 	uint32_t 		sid;

@@ -26,11 +26,11 @@ if ($row = $result->fetch_assoc()) {
         'data' => [
             'sensor_id' => (int)$row['sensor_id'],
             'status'    => (int)$row['status'],
-            'slot_name' => $row['slot_name'] ?? 'Slot ' . $row['sensor_id'],
-            'slot_type' => $row['slot_type'] ?? 'Standard Parking',
-            'level'     => $row['level'] ?? '',
-            'location'  => $row['location'] ?? '',
-            'zone'      => $row['zone'] ?? '',
+            'slot_name' => $row['slot_name'] ?? '—',
+            'slot_type' => $row['slot_type'] ?? '—',
+            'level'     => $row['level'] ?? '—',
+            'location'  => $row['location'] ?? '—',
+            'zone'      => $row['zone'] ?? '—',
             'timestamp' => $row['timestamp']
         ]
     ]);

@@ -6,7 +6,7 @@ include '../includes/db_connect.php';
 $now = time();
 
 $stmt = $conn->prepare("
-    SELECT sd.sensor_id, sd.status, sd.timestamp,
+    SELECT sd.sensor_id, sd.status, sd.timestamp, sd.battery,
            ps.slot_name, ps.slot_type, ps.level, ps.location, ps.zone
     FROM sensor_data sd
     LEFT JOIN parking_slots ps ON sd.sensor_id = ps.sensor_id
@@ -40,11 +40,12 @@ while ($row = $result->fetch_assoc()) {
         'hours_ago' => round($hours_ago, 1),
         'health'    => $health,
         'alert'     => $alert,
-        'slot_name' => $row['slot_name'] ?? 'Slot ' . $id,
-        'slot_type' => $row['slot_type'] ?? 'Standard',
-        'level'     => $row['level'] ?? '',
-        'location'  => $row['location'] ?? '',
-        'zone'      => $row['zone'] ?? ''
+        'battery'   => $row['battery'] !== null ? round((float)$row['battery'], 1) : null,
+        'slot_name' => $row['slot_name'] ?? '—',
+        'slot_type' => $row['slot_type'] ?? '—',
+        'level'     => $row['level'] ?? '—',
+        'location'  => $row['location'] ?? '—',
+        'zone'      => $row['zone'] ?? '—'
     ];
 }
 

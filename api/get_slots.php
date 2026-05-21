@@ -42,7 +42,7 @@ if (isset($_GET['level'])) {
 $sql = "SELECT sd.sensor_id, sd.status, sd.timestamp,
                ps.slot_name, ps.slot_type, ps.level, ps.location, ps.zone
         FROM sensor_data sd
-        LEFT JOIN parking_slots ps ON sd.sensor_id = ps.sensor_id";
+        INNER JOIN parking_slots ps ON sd.sensor_id = ps.sensor_id";
 
 if ($where) {
     $sql .= ' WHERE ' . implode(' AND ', $where);
@@ -62,11 +62,11 @@ while ($row = $result->fetch_assoc()) {
     $slots[] = [
         'sensor_id' => (int)$row['sensor_id'],
         'status'    => (int)$row['status'],
-        'slot_name' => $row['slot_name'] ?? 'Slot ' . $row['sensor_id'],
-        'slot_type' => $row['slot_type'] ?? 'Standard Parking',
-        'level'     => $row['level'] ?? '',
-        'location'  => $row['location'] ?? '',
-        'zone'      => $row['zone'] ?? '',
+        'slot_name' => $row['slot_name'] ?? '—',
+        'slot_type' => $row['slot_type'] ?? '—',
+        'level'     => $row['level'] ?? '—',
+        'location'  => $row['location'] ?? '—',
+        'zone'      => $row['zone'] ?? '—',
         'timestamp' => $row['timestamp']
     ];
 }

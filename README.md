@@ -490,6 +490,3 @@ The Arduino polls IR sensors every 3 seconds. On state change, it sends a 6-byte
 **POST returns 404** — Gateway's target URL is hardcoded as `/sensor_data.php` in `client.h` (CLIENT_SERVER_NAME_DEFAULT = "localhost", port 80). Deploy to Apache root or change in `main.c`.
 
 **Admin login not working** — Credentials are in `includes/auth.php`. Default: `admin` / `admin123`. Sessions are file-based in `session.txt`.
-
----
-

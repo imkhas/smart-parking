@@ -59,23 +59,31 @@ function fetchSlots() {
 }
 
 function updateSlotsUI(slots) {
-    document.querySelectorAll('.slot').forEach(el => el.classList.add('hidden'));
-
-    slots.forEach(slot => {
-        const el = document.getElementById("slot" + slot.sensor_id);
-        if (!el) return;
-
-        el.classList.remove('hidden');
-
-        const btn = el.querySelector("button");
+    const container = document.getElementById('slots-container');
+    container.innerHTML = slots.map(slot => {
         const isOccupied = (slot.status == 0);
+        const cls = "slot" + (isOccupied ? " occupied" : " available");
 
-        el.className = "slot" + (isOccupied ? " occupied" : " available");
+        const type = (slot.slot_type || '').toLowerCase();
+        let badgeClass = 'slot-type-standard';
+        let icon = 'fa-car-side';
+        if (type.includes('disabled')) { badgeClass = 'slot-type-disabled'; icon = 'fa-wheelchair'; }
+        else if (type.includes('ev') || type.includes('charging')) { badgeClass = 'slot-type-ev'; icon = 'fa-charging-station'; }
+        else if (type.includes('women')) { badgeClass = 'slot-type-womens'; icon = 'fa-person-dress'; }
+        else if (type.includes('compact')) { badgeClass = 'slot-type-compact'; icon = 'fa-car-side'; }
 
-        if (btn) {
-            btn.innerText = isOccupied ? "OCCUPIED" : "AVAILABLE";
-        }
-    });
+        const displayName = slot.slot_name !== '—' ? slot.slot_name : 'Slot ' + slot.sensor_id;
+        const shortName = displayName.replace(/^Parking Slot - /i, '');
+        const badgeText = slot.slot_type !== '—' ? slot.slot_type.replace(/ Parking$/, '') : '';
+
+        return `
+            <div class="${cls}" id="slot${slot.sensor_id}" data-sensor-id="${slot.sensor_id}" data-slot-type="${slot.slot_type}" data-level="${slot.level}">
+                <h3>${shortName} ${badgeText ? '<span class="slot-type-badge ' + badgeClass + '">' + badgeText + '</span>' : ''}</h3>
+                <i class="fa-solid ${icon}"></i>
+                <button>${isOccupied ? "OCCUPIED" : "AVAILABLE"}</button>
+            </div>
+        `;
+    }).join('');
 }
 
 function updateStatsFromSlots(slots) {
@@ -92,6 +100,7 @@ function updateStatsFromSlots(slots) {
     safeSet("occupied-count", occupied);
     safeSet("available-count", available);
     safeSet("available-slots", available);
+    safeSet("total-slots", total);
     safeSet("occupancy-rate", rate + "%");
 
     safeSet("parking-status", available === 0 ? "FULL" : "OPEN");
