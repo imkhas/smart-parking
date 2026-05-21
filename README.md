@@ -1,6 +1,6 @@
 # Smart Parking System
 
-IoT-based parking monitoring system with real-time dashboard. Supports both **BLE gateway** and **USB serial** data paths.
+IoT-based parking monitoring system with real-time dashboard, admin panel, BLE gateway, and dual Arduino firmware.
 
 ---
 
@@ -15,9 +15,8 @@ sudo apt install apache2 php php-mysqli mysql-server mysql-client pkg-config lib
 sudo systemctl enable apache2 mysql
 sudo systemctl start apache2 mysql
 
-# 3. Set up MySQL (use your own root password)
-sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'your_root_password';"
-sudo mysql -u root -p'your_root_password' -e "CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin123'; GRANT ALL ON *.* TO 'admin'@'localhost'; FLUSH PRIVILEGES;"
+# 3. Create MySQL user
+sudo mysql -e "CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin123'; GRANT ALL ON *.* TO 'admin'@'localhost'; FLUSH PRIVILEGES;"
 
 # 4. Clone & deploy
 git clone https://github.com/imkhas/smart-parking.git
@@ -25,7 +24,7 @@ sudo mv smart-parking /var/www/html/
 sudo chown -R www-data:www-data /var/www/html/smart-parking
 
 # 5. Import database
-mysql -u root -p'your_root_password' < /var/www/html/smart-parking/database/smart_parking.sql
+mysql -u admin -p'admin123' < /var/www/html/smart-parking/database/smart_parking.sql
 
 # 6. Open dashboard
 # http://localhost/smart-parking/dashboard/index.php
@@ -36,19 +35,20 @@ mysql -u root -p'your_root_password' < /var/www/html/smart-parking/database/smar
 ## System Architecture
 
 ```
-IR Sensors → Arduino Uno → BLE (AT-09 module) → Linux Gateway (C) → HTTP POST → sensor_data.php → MySQL
-                                                        └─ Dashboard (AJAX 2s poll) → API → MySQL
+IR Sensors → Arduino Uno → BLE (AT-09) → Linux Gateway (C, D-Bus) → HTTP POST → MySQL
+                                                              └─ Dashboard (AJAX 2s) → API → MySQL
 ```
 
 ### Data Flow
 
-| Layer | Path | Details |
-|-------|------|---------|
-| Embedded | Arduino | IR sensors, software UART for BLE |
-| Gateway | Linux (C) | BLE scan → connect → notify → HTTP POST |
-| Backend | PHP | Receives POST, debounces, updates DB |
-| Database | MySQL | Slot status + parking metadata |
-| Frontend | Dashboard | Real-time AJAX polling with filters |
+| Layer     | Component          | Details                                                    |
+|-----------|--------------------|------------------------------------------------------------|
+| Embedded  | Arduino Uno        | Reads IR sensors, ADC for battery, sends 6-byte BLE frames |
+| Wireless  | AT-09 / HM-10      | BLE peripheral, advertises as NAZHAN                       |
+| Gateway   | Linux (C)          | BlueZ D-Bus scan → connect → notify → POST to PHP          |
+| Backend   | PHP                | Parses POST data, debounces, UPDATEs sensor_data           |
+| Database  | MySQL              | sensor_data + parking_slots with FK                        |
+| Frontend  | Dashboard + Admin  | AJAX polling, slot cards, filter dropdowns, management     |
 
 ---
 
@@ -56,132 +56,186 @@ IR Sensors → Arduino Uno → BLE (AT-09 module) → Linux Gateway (C) → HTTP
 
 ```
 smart-parking/
-├── admin.php                # Admin panel (login protected, sensor health, override)
-├── sensor_data.php          # POST endpoint: receives data from gateway
+├── login.php                  # Admin login page
+├── admin.php                  # Admin panel (3 tabs: health, override, slot mgmt)
+├── sensor_data.php            # POST endpoint: receives data from gateway
+├── session.txt                # Session storage (file-based)
 │
-├── 11_gateway_POST/        # Linux BLE gateway (C application)
-│   ├── compile.sh          # Build script (gcc + dbus-1)
-│   ├── gateway_POST        # Compiled binary
-│   ├── main.c              # Entry point: BLE scan → connect → POST loop
-│   ├── ble.c / ble.h       # BlueZ D-Bus BLE communication
-│   ├── sense.c / sense.h   # Ring buffer for sensor readings
-│   ├── client.c / client.h # HTTP/1.1 socket client (POST/GET)
-│   └── sys.c / sys.h       # System init, monotonic clock, fatal errors
+├── dashboard/                 # Web dashboard frontend
+│   ├── index.php              # Main dashboard (filter bar, dynamic slot grid, modal)
+│   └── assets/
+│       ├── css/
+│       │   ├── style.css      # Main stylesheet
+│       │   ├── admin.css      # Admin panel styles (tabs, forms, mgmt cards)
+│       │   └── login.css      # Login page styles
+│       └── js/
+│           ├── ajax.js        # Fetches slots with filters, builds UI dynamically
+│           ├── dashboard.js   # Clock, modal, click handler (event delegation)
+│           └── admin.js       # Health monitor, override, slot management
 │
-├── carpark/                 # Arduino firmware (AVR C)
-│   ├── carpark.ino          # Entry point (main)
-│   ├── uart.c / uart.h      # Hardware UART0 ISR-driven
-│   ├── swuart.c / swuart.h  # Software UART for BLE module
-│   ├── gpio.c / gpio.h      # GPIO abstraction
-│   ├── timer0.c / timer0.h  # Drives SWUART at ~38.4kHz
-│   ├── timer2.c / timer2.h  # 1ms system tick (SYS_TICK)
-│   ├── ble.c / ble.h        # BLE enable/state pin control
-│   ├── adc.c / adc.h        # ADC init and read
-│   ├── twi.c / twi.h        # TWI/I2C master
-│   ├── delay.c / delay.h    # Blocking delay using SYS_TICK
-│   └── err.c / err.h        # Error handler stub
+├── api/                       # REST API endpoints
+│   ├── get_slots.php          # GET: all assigned slots (INNER JOIN), filters
+│   ├── get_slot_details.php   # GET: single slot modal data
+│   ├── get_sensor_health.php  # GET: health check (online/offline/overstay)
+│   ├── get_slot_mappings.php  # GET: all parking_slots with sensor info (LEFT JOIN)
+│   ├── get_active_sensors.php # GET: unassigned + all sensor lists
+│   ├── add_slot.php           # POST: create a new parking slot
+│   ├── assign_sensor.php      # POST: assign sensor to slot (clears old slot)
+│   ├── delete_slot.php        # POST: delete slot by id
+│   └── update_slot.php        # GET: manual status override (?slot_id=&status=)
 │
-├── api/                     # REST API endpoints
-│   ├── get_slots.php        # GET: returns slot status (supports ?status[], ?type[], ?level[] filters)
-│   ├── get_slot_details.php # GET: returns single slot details for modal (?slot_id=)
-│   ├── get_sensor_health.php# GET: sensor health check (online/offline/overstay)
-│   ├── update_slot.php      # GET: manual slot status update (?slot_id=&status=)
-│   └── get_statistics.php   # (empty)
+├── 11_gateway_POST/           # Linux BLE gateway (C application)
+│   ├── compile.sh             # Build script (gcc + dbus-1)
+│   ├── gateway_POST           # Compiled binary
+│   ├── main.c                 # Entry: scan → connect → notify → POST loop
+│   ├── ble.c / ble.h          # BlueZ D-Bus BLE (scan, connect, notify, transmit)
+│   ├── sense.c / sense.h      # Ring buffer for sensor readings
+│   ├── client.c / client.h    # HTTP/1.1 socket client (POST/GET)
+│   ├── sys.c / sys.h          # System init, monotonic clock
+│   ├── global.h               # Shared includes and types
+│   └── POST.php               # Debug POST test script
 │
-├── dashboard/               # Web dashboard frontend
-│   ├── index.php            # Main dashboard (filter bar, slot grid, modal)
-│   ├── assets/
-│   │   ├── css/
-│   │   │   └── style.css    # Main stylesheet + filter dropdowns + modal
-│   │   └── js/
-│   │       ├── ajax.js      # Fetches slots with filters, updates UI
-│   │       └── dashboard.js # Clock, click handlers, modal display
+├── carpark/                   # Legacy Arduino firmware (AVR C)
+│   ├── carpark.ino            # Entry — original version
+│   ├── uart.c / uart.h        # Hardware UART0 ISR-driven
+│   ├── swuart.c / swuart.h    # Software UART for BLE module
+│   ├── gpio.c / gpio.h        # GPIO abstraction
+│   ├── timer0.c / timer0.h    # Drives SWUART at ~38.4kHz
+│   ├── timer2.c / timer2.h    # 1ms system tick (SYS_TICK)
+│   ├── ble.c / ble.h          # BLE enable/state pin control
+│   ├── adc.c / adc.h          # ADC init and read
+│   ├── twi.c / twi.h          # TWI/I2C master
+│   ├── delay.c / delay.h      # Blocking delay using SYS_TICK
+│   └── err.c / err.h          # Error handler stub
 │
-├── database/
-│   └── smart_parking.sql    # Schema + sample data
+├── carpark(new)/              # Current Arduino firmware (AVR C)
+│   ├── carpark.ino            # Entry — IR sensing + battery monitoring + BLE TX
+│   ├── uart.c / uart.h        # Hardware UART0 ISR-driven
+│   ├── swuart.c / swuart.h    # Software UART for BLE module
+│   ├── gpio.c / gpio.h        # GPIO abstraction
+│   ├── timer0.c / timer0.h    # Drives SWUART at ~38.4kHz
+│   ├── timer2.c / timer2.h    # 1ms system tick
+│   ├── ble.c / ble.h          # BLE enable/state pin control
+│   ├── adc.c / adc.h          # ADC init and read
+│   ├── battery.c / battery.h  # Battery voltage calculation + percentage
+│   ├── twi.c / twi.h          # TWI/I2C master
+│   ├── delay.c / delay.h      # Blocking delay
+│   └── err.c / err.h          # Error handler stub
 │
 ├── includes/
-│   └── db_connect.php       # MySQL connection (edit credentials here)
+│   ├── db_connect.php         # MySQL connection (edit credentials here)
+│   ├── health_config.php      # Shared health thresholds (OFFLINE, OVERSTAY, LOG_FILE)
+│   └── auth.php               # Session-based admin authentication
 │
 ├── services/
-│   ├── serial_reader.php    # Alternative: USB serial daemon
-│   └── sensor_health.php    # Background health check (run via cron)
+│   ├── serial_reader.php      # Alternative: USB serial daemon
+│   └── sensor_health.php      # Background health check (run via cron)
 │
-├── logs/                    # System logs
-└── README.md                # This file
+├── database/
+│   ├── smart_parking.sql      # Schema + sample data (4 sensors, 4 slots)
+│   └── sample_data.sql        # Additional sample data
+│
+├── logs/                      # Runtime logs
+│   └── sensor_health.log      # Offline/overstay alerts (auto-created)
+├── .gitignore
+├── INSTALLATION.md
+└── README.md                  # This file
 ```
 
 ---
 
 ## Hardware Requirements
 
-* Arduino Uno or Mega
-* 4× IR sensors
-* AT-09 or HM-10 BLE module
-* 5V power supply (USB hub or wall adapter recommended to avoid sensor flapping)
+* Arduino Uno R3 (or compatible)
+* 4× IR obstacle-avoidance sensors
+* AT-09 or HM-10 BLE module (9600 baud, configured as NAZHAN)
+* 5V power supply (USB hub or wall adapter recommended to avoid flapping)
 * 100µF capacitor across 5V/GND near IR sensor rail (optional, stabilizes readings)
+* (Optional) Voltage divider for battery monitoring
+
+### Pinout (carpark(new))
+
+| Component      | Arduino Pin |
+|----------------|-------------|
+| IR Sensor 1    | D9          |
+| IR Sensor 2    | D11         |
+| IR Sensor 3    | D13         |
+| IR Sensor 4    | D7          |
+| LED 1          | D8          |
+| LED 2          | D10         |
+| LED 3          | D12         |
+| LED 4          | D6          |
+| Full LED       | D16 (A2)    |
+| BLE EN         | D4          |
+| BLE STATE      | D5          |
+| ADC Battery    | A0          |
 
 ---
 
 ## Software Requirements
 
-* Ubuntu Linux (recommended)
-* Apache2 Web Server
-* PHP 8+ with mysqli extension
+* Ubuntu Linux (recommended) or any Linux with BlueZ ≥5.50
+* Apache2 + PHP 8+ with mysqli
 * MySQL / MariaDB
-* For BLE gateway: BlueZ (dbus-1), OpenSSL
+* For BLE gateway: `libdbus-1-dev`, `libssl-dev`, BlueZ running
 
 ---
 
 ## Installation
 
-### Step 1: Clone Repository
+### Step 1: Database Setup
 
 ```bash
-git clone https://github.com/imkhas/smart-parking.git
-cd smart-parking
+mysql -u admin -p < database/smart_parking.sql
 ```
 
-### Step 2: Database Setup
+Creates two tables:
+- **sensor_data** — real-time status and timestamps (sensor_id 1–4, auto-created)
+- **parking_slots** — metadata (name, type, level, zone, location) with FK to sensor_data
 
-```bash
-mysql -u root -p < database/smart_parking.sql
+### Step 2: Configure Database Credentials
+
+Edit `includes/db_connect.php`:
+```php
+$conn = mysqli_connect("localhost", "admin", "admin123", "smart_parking");
 ```
 
-This creates:
-- **sensor_data** — stores real-time slot status (sensor_id, status, timestamp)
-- **parking_slots** — stores slot metadata (name, type, level, zone, location)
+### Step 3: Upload Arduino Firmware
 
-### Step 3: Configure Database Credentials
+1. Open `carpark(new)/carpark.ino` in Arduino IDE
+2. Select board: **Arduino Uno**
+3. Select port (e.g. `/dev/ttyACM0`)
+4. Upload
 
-Edit `includes/db_connect.php` with your database credentials.
-
-### Step 4: Deploy to Apache
-
-```bash
-sudo mv smart-parking /var/www/html/
-sudo chown -R www-data:www-data /var/www/html/smart-parking
+The BLE module must be pre-configured via AT commands:
+```
+AT+NAMENAZHAN      # Set device name
+AT+ROLE0           # Peripheral mode
+AT+UUID0xFFE0      # Service UUID
+AT+CHAR0xFFE1      # Characteristic UUID
+AT+BAUD0           # 9600 baud (default)
 ```
 
-### Step 5: Upload Arduino Firmware
-
-Open `carpark/carpark.ino` in Arduino IDE, select your board and port (`/dev/ttyACM0` or `/dev/ttyUSB0`), then upload.
-
-The BLE module must be pre-configured to advertise as **NAZHAN** and use UUID `0000ffe0-0000-1000-8000-00805f9b34fb`.
-
-### Step 6: Compile & Run BLE Gateway
+### Step 4: Compile & Run BLE Gateway
 
 ```bash
 cd /var/www/html/smart-parking/11_gateway_POST
-./compile.sh
+bash compile.sh
 sudo ./gateway_POST
 ```
 
-The gateway scans for 60 seconds, connects to the BLE device, receives sensor notifications, and POSTs data to `sensor_data.php`.
+The gateway scans for NAZHAN for 60 seconds, connects, receives 6-byte notifications, and POSTs to `/sensor_data.php`.
+
+### Step 5: Set Up Cron for Health Monitoring
+
+```bash
+# /etc/cron.d/smart-parking
+0 * * * *   www-data   php /var/www/html/smart-parking/services/sensor_health.php
+```
 
 ### Alternative: USB Serial Path
 
-If using USB serial instead of BLE:
+If using USB serial instead of BLE (e.g. for testing):
 
 ```bash
 php /var/www/html/smart-parking/services/serial_reader.php
@@ -191,53 +245,52 @@ php /var/www/html/smart-parking/services/serial_reader.php
 
 ## Dashboard
 
-Access at: `http://localhost/smart-parking/dashboard/index.php`
+**URL:** `http://localhost/smart-parking/dashboard/index.php`
 
 ### Features
 
 - Real-time slot status (auto-refreshes every 2 seconds)
-- Filter dropdowns with multi-select checkboxes:
+- Dynamic slot cards (generated from API — no hardcoded HTML)
+- Filter dropdowns with multi-select:
   - **Status** — Available, Occupied
   - **Type** — Standard, Women's, Disabled, EV Charging
   - **Level** — Ground, Level 1, Level 2
-- Click any slot for detailed info modal
-- Responsive layout for mobile
+- Click any slot card → modal with full details
+- Event delegation for click handling (works on dynamically created elements)
+- Parking status banner: OPEN / FULL
+- Responsive layout
 
 ---
 
 ## Admin Panel
 
-Access at: `http://localhost/smart-parking/admin.php`
+**URL:** `http://localhost/smart-parking/admin.php`
+**Credentials:** `admin` / `admin123`
 
-Default credentials: `admin` / `admin123`
+### Tabs
 
-### Features
+| Tab              | Description                                                          |
+|------------------|----------------------------------------------------------------------|
+| **Sensor Health** | Live health status (online/offline/overstay) with hours-since-last-update |
+| **Manual Override** | Force a slot's status (available/occupied) for maintenance         |
+| **Slot Management** | Add new slots, assign/unassign sensors, view mapping, delete slots |
 
-| Feature | Description |
-|---------|-------------|
-| **Sensor Health** | Real-time status of all sensors (online/offline/overstay) |
-| **Manual Override** | Force a slot status change for maintenance |
-| **Offline Detection** | Alerts when a sensor hasn't reported in 48+ hours |
-| **Overstay Detection** | Alerts when a slot is occupied for 24+ hours |
+### Slot Management
+
+- **Add Slot** — Form with 5 fields (name, location, level, zone, type). Inserts row into `parking_slots` without a sensor.
+- **Assign Sensor** — Dropdown of unassigned sensors → dropdown of slots. Clears previous assignment automatically (sensor_id set NULL on old slot, then set on new slot).
+- **Mapping Table** — Shows all parking_slots with sensor info. Delete button with confirmation dialog.
+- The dashboard uses `INNER JOIN` so only **assigned** slots display. Unassigned slots are invisible to end users.
 
 ### Sensor Health Thresholds
 
-| Condition | Threshold | Health Status |
-|-----------|-----------|---------------|
-| No data in 48+ hours | 48h | 🔴 `OFFLINE` |
-| Occupied for 24+ hours | 24h | 🟡 `OVERSTAY` |
-| Normal operation | — | 🟢 `ONLINE` |
+| Condition                   | Threshold | Badge    |
+|-----------------------------|-----------|----------|
+| No data in 24+ hours        | 24h       | OFFLINE  |
+| Occupied for 24+ hours      | 24h       | OVERSTAY |
+| Normal operation            | —         | ONLINE   |
 
-### Background Health Check (Cron)
-
-Set up an hourly cron job to log sensor issues:
-
-```bash
-# /etc/cron.d/smart-parking
-0 * * * *   www-data   php /var/www/html/smart-parking/services/sensor_health.php
-```
-
-Logs are written to `logs/sensor_health.log`.
+> **Note:** Actual thresholds are defined in `includes/health_config.php` and can be adjusted without touching other files.
 
 ---
 
@@ -245,13 +298,13 @@ Logs are written to `logs/sensor_health.log`.
 
 ### GET /api/get_slots.php
 
-Returns all slots with status and metadata. Supports optional filters:
+Returns **assigned** slots only (INNER JOIN). Supports filters:
 
-| Parameter | Type | Example |
-|-----------|------|---------|
-| `status[]` | array | `?status[]=1` (available), `?status[]=0&status[]=1` |
-| `type[]` | array | `?type[]=Womens+Parking` |
-| `level[]` | array | `?level[]=Level+-+Ground` |
+| Parameter  | Type    | Example                                    |
+|------------|---------|--------------------------------------------|
+| `status[]` | int[]   | `?status[]=1` (available only)             |
+| `type[]`   | string[]| `?type[]=Womens%20Parking`                 |
+| `level[]`  | string[]| `?level[]=Level%20-%20Ground`              |
 
 Response:
 ```json
@@ -271,15 +324,17 @@ Response:
 
 ### GET /api/get_slot_details.php
 
-Returns details for a single slot.
+Single slot details for the modal.
 
 | Parameter | Type | Required |
 |-----------|------|----------|
-| `slot_id` | int | Yes |
+| `slot_id` | int  | Yes      |
+
+Response: `{ "success": true, "data": { ... } }`
 
 ### GET /api/get_sensor_health.php
 
-Returns health status for all sensors (used by admin panel).
+Health status for all sensors (LEFT JOIN includes unassigned). Used by admin.
 
 Response:
 ```json
@@ -290,37 +345,64 @@ Response:
       "status": 0,
       "health": "online",
       "alert": "",
-      "hours_ago": 1.5
+      "hours_ago": 1.5,
+      "slot_name": "...",
+      "slot_type": "..."
     }
   ],
-  "summary": {
-    "online": 3,
-    "offline": 0,
-    "overstay": 1
-  }
+  "summary": { "online": 3, "offline": 0, "overstay": 1 }
 }
 ```
 
+### GET /api/get_slot_mappings.php
+
+All parking_slots with sensor LEFT JOIN — used by admin mapping table.
+
+### GET /api/get_active_sensors.php
+
+```json
+{
+  "unassigned": [ { "sensor_id": 2, ... } ],
+  "all": [ { "sensor_id": 1, ... }, ... ]
+}
+```
+
+### POST /api/add_slot.php
+
+Create a new parking slot (no sensor assigned yet). Fields: `slot_name`, `location`, `level`, `zone`, `slot_type`.
+
+### POST /api/assign_sensor.php
+
+Assign a sensor to a slot. Clears any previous assignment automatically. Fields: `slot_id`, `sensor_id`.
+
+### POST /api/delete_slot.php
+
+Delete a slot by id. Field: `slot_id`.
+
 ### POST /sensor_data.php
 
-Endpoint for gateway to push sensor readings.
+Gateway endpoint. Parameter `data` contains comma-separated readings.
 
-| Parameter | Type | Format |
-|-----------|------|--------|
-| `data` | string | `,200,1,1778813047,1.0;` |
+| Format                                  | Example                                       |
+|-----------------------------------------|-----------------------------------------------|
+| `data=<sid>,<mid>,<timestamp>,<value>;` | `data=200,0,1747785600,0.000000;201,0,...;`   |
 
-Format per entry: `,sid, mid, timestamp, value;`
-- `sid`: 200–203 (converted to slot_id = sid − 199)
-- `value`: 0.0 (occupied) or 1.0 (available)
+- `sid`: 200–203 (converted to `slot_id = sid − 199`)
+- `mid`: 0 (measurement index, unused by PHP)
+- `timestamp`: Unix epoch from gateway
+- `value`: 0.0 (occupied) or 1.0 (free)
+- `sid=100`: battery percentage (ignored — falls outside 200–203 range)
+
+Debounce: minimum 3 seconds between updates per sensor.
 
 ### GET /api/update_slot.php
 
-Manual slot status update via GET parameters.
+Manual override.
 
 | Parameter | Type | Required |
 |-----------|------|----------|
-| `slot_id` | int | Yes |
-| `status` | int | Yes |
+| `slot_id` | int  | Yes      |
+| `status`  | int  | Yes      |
 
 ---
 
@@ -328,38 +410,70 @@ Manual slot status update via GET parameters.
 
 ### sensor_data
 
-| Column | Type | Notes |
-|--------|------|-------|
-| id | INT | Auto increment PK |
-| sensor_id | INT | 1–4 (unique) |
-| status | TINYINT(1) | 0 = occupied, 1 = available |
-| timestamp | TIMESTAMP | Auto-updates on change |
+| Column     | Type          | Notes                        |
+|------------|---------------|------------------------------|
+| id         | INT           | Auto-increment PK            |
+| sensor_id  | INT           | 1–4 (UNIQUE)                 |
+| status     | TINYINT(1)    | 0 = occupied, 1 = available  |
+| timestamp  | TIMESTAMP     | Auto-updates on change       |
 
 ### parking_slots
 
-| Column | Type | Notes |
-|--------|------|-------|
-| sensor_id | INT | FK to sensor_data |
-| slot_name | VARCHAR(50) | e.g. "Parking Slot - A1" |
-| location | VARCHAR(100) | e.g. "Left Wing" |
-| level | VARCHAR(50) | e.g. "Level - Ground" |
-| zone | VARCHAR(100) | e.g. "Zone A - Main Entrance Area" |
-| slot_type | VARCHAR(50) | e.g. "Womens Parking" |
+| Column     | Type          | Notes                              |
+|------------|---------------|------------------------------------|
+| id         | INT           | Auto-increment PK                  |
+| sensor_id  | INT           | UNIQUE, NULLABLE, FK→sensor_data   |
+| slot_name  | VARCHAR(50)   | e.g. "Parking Slot - A1"           |
+| location   | VARCHAR(100)  | e.g. "Left Wing"                   |
+| level      | VARCHAR(50)   | e.g. "Level - Ground"              |
+| zone       | VARCHAR(100)  | e.g. "Zone A - Main Entrance Area" |
+| slot_type  | VARCHAR(50)   | e.g. "Womens Parking"              |
+
+FK: `ON DELETE SET NULL` — deleting a sensor_data row leaves the slot intact.
+
+---
+
+## BLE Gateway Protocol
+
+### 6-Byte Frame (Arduino → Gateway)
+
+| Offset | Field     | Description                       |
+|--------|-----------|-----------------------------------|
+| 0      | sid       | Sensor ID (200, 201, 202, 203)    |
+| 1      | mid       | Measurement index (always 0)      |
+| 2–5    | value     | IEEE 754 float (LSB first)        |
+
+Gateway appends Unix timestamp via `time(NULL)` and POSTs to PHP.
+
+### D-Bus Integration
+
+The gateway uses BlueZ over D-Bus:
+- **ObjectManager** `InterfacesAdded` signals for device discovery
+- **Properties** `PropertiesChanged` for GATT notifications
+- Adapter path hardcoded: `/org/bluez/hci1` (configurable in `ble.c`)
+
+---
+
+## Arduino Data Format (carpark(new))
+
+6-byte BLE notification:
+
+```
+Byte 0: sid (200-203 for IR, 100 for battery)
+Byte 1: mid (0 for IR, 1 for battery)
+Byte 2-5: float32 value (0.0 = occupied, 1.0 = free)
+```
+
+The Arduino polls IR sensors every 3 seconds. On state change, it sends a 6-byte frame via BLE. Battery voltage is read via ADC every 12 seconds and sent as sid=100.
 
 ---
 
 ## Status Mapping
 
-| DB Value | Meaning | Dashboard |
-|----------|---------|-----------|
-| 0 | Occupied | Red card, OCCUPIED label |
-| 1 | Available | Green card, AVAILABLE label |
-
----
-
-## Sensor Debouncing
-
-`sensor_data.php` enforces a 3-second minimum interval between updates to the same sensor. This prevents dashboard flicker when sensors produce noisy/flapping readings due to voltage instability at the detection threshold.
+| DB Value | Meaning   | Dashboard Card          |
+|----------|-----------|-------------------------|
+| 0        | Occupied  | Red, OCCUPIED button    |
+| 1        | Available | Green, AVAILABLE button |
 
 ---
 
@@ -367,11 +481,15 @@ Manual slot status update via GET parameters.
 
 **Dashboard shows "FULL" when slots are available** — Hard refresh (Ctrl+Shift+R) to clear cached JS.
 
-**Gateway can't find BLE device** — Check `bluetoothctl scan on` in terminal. Verify the module is powered and advertising as `NAZHAN`. Remove cached devices: `bluetoothctl remove <MAC>`.
+**No slots appear on dashboard** — Slots must have a sensor assigned. Go to Admin → Slot Management → Assign Sensor. Dashboard uses INNER JOIN and only shows assigned slots.
 
-**Sensor readings flip rapidly** — Low voltage on Arduino. Use a powered USB hub or 5V wall adapter. Add a 100µF capacitor across 5V/GND near the IR sensor power rail.
+**Gateway can't find BLE device** — Run `bluetoothctl scan on` to check NAZHAN is advertising. Verify module is powered. Remove cached devices: `bluetoothctl remove C4:BE:84:2B:BF:ED`.
 
-**POST returns 404** — The gateway's target URL must match your web path (default: `/smart-parking/sensor_data.php`). See `11_gateway_POST/main.c`.
+**Sensor readings flip rapidly** — Low voltage: use powered USB hub or 5V adapter. Add 100µF capacitor across 5V/GND near IR sensors.
+
+**POST returns 404** — Gateway's target URL is hardcoded as `/sensor_data.php` in `client.h` (CLIENT_SERVER_NAME_DEFAULT = "localhost", port 80). Deploy to Apache root or change in `main.c`.
+
+**Admin login not working** — Credentials are in `includes/auth.php`. Default: `admin` / `admin123`. Sessions are file-based in `session.txt`.
 
 ---
 
@@ -382,3 +500,4 @@ Manual slot status update via GET parameters.
 - Camera-based parking detection
 - Mobile application
 - AI-based occupancy prediction
+- Configurable debounce per sensor
