@@ -493,11 +493,3 @@ The Arduino polls IR sensors every 3 seconds. On state change, it sends a 6-byte
 
 ---
 
-## Future Enhancements
-
-- ESP32 WiFi-based IoT (replace BLE gateway)
-- WebSocket real-time updates (replace AJAX polling)
-- Camera-based parking detection
-- Mobile application
-- AI-based occupancy prediction
-- Configurable debounce per sensor
