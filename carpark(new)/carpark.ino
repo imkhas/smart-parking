@@ -9,11 +9,6 @@
 
 #define LED_FULL_PIN			16
 
-#define IR1_PIN						9
-#define IR2_PIN						11
-#define IR3_PIN						13
-#define IR4_PIN						7
-
 #define IR_COUNT					4
 #define ADC_PIN						0
 
@@ -38,10 +33,10 @@ int main(void) {
 	char str[80];
 	bool first_state_run = false;
 	bool IR_tx_true = false;
-	uint32_t IR_timeout = SYS_TICK + 1000;
+	uint32_t IR_timeout = SYS_TICK + 3000;
 
 	bool first_run = true;
-	uint32_t ADC_timeout = SYS_TICK + 3000;
+	uint32_t ADC_timeout = SYS_TICK + 30000;
 	uint16_t ADC_value[ADC_BUF_SIZE] = {0};
 	uint32_t ADC_sum = 0;
 	uint16_t ADC_average;
@@ -163,7 +158,7 @@ int main(void) {
 
 			if ((SYS_TICK >= ADC_timeout) || (IR_tx_true != true) && (first_state_run)){
 				IR_tx_true == false;
-				ADC_timeout = SYS_TICK + 3000;
+				ADC_timeout = SYS_TICK + 30000;
 
 				for (int i = 0; (first_run == true) && (i < ADC_BUF_SIZE); i++){
 				ADC_sum -= ADC_value[ADC_ptr];								//subtract oldest value
