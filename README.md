@@ -57,88 +57,87 @@ IR Sensors → Arduino Uno → BLE (AT-09) → Linux Gateway (C, D-Bus) → HTTP
 ```
 smart-parking/
 ├── login.php                  # Admin login page
-├── admin.php                  # Admin panel (3 tabs: health, override, slot mgmt)
-├── sensor_data.php            # POST endpoint: receives data from gateway
-├── session.txt                # Session storage (file-based)
+├── admin.php                  # Admin panel — Sensor Health, Manual Override, Slot Management
+├── sensor_data.php            # POST endpoint — receives BLE gateway readings, parses CSV, writes to DB
+├── session.txt                # File-based PHP session storage
+├── Info.md                    # Project notes / changelog
 │
-├── dashboard/                 # Web dashboard frontend
-│   ├── index.php              # Main dashboard (filter bar, dynamic slot grid, modal)
+├── dashboard/                 # Web frontend
+│   ├── index.php              # Dashboard — filter bar, dynamic slot grid, detail modal
 │   └── assets/
 │       ├── css/
-│       │   ├── style.css      # Main stylesheet
-│       │   ├── admin.css      # Admin panel styles (tabs, forms, mgmt cards)
-│       │   └── login.css      # Login page styles
+│       │   ├── style.css      # Layout, slot cards, filters, responsive grid
+│       │   ├── admin.css      # Admin tabs, health/override/mgmt table styles
+│       │   ├── login.css      # Login page card styling
+│       │   └── mobile.css     # Mobile-responsive overrides
 │       └── js/
-│           ├── ajax.js        # Fetches slots with filters, builds UI dynamically
-│           ├── dashboard.js   # Clock, modal, click handler (event delegation)
-│           └── admin.js       # Health monitor, override, slot management
+│           ├── ajax.js        # Core — fetches slots every 2s, builds cards, handles filters
+│           ├── dashboard.js   # Clock, slot detail modal popup
+│           └── admin.js       # Tab switching, health table, override, slot CRUD
 │
-├── api/                       # REST API endpoints
-│   ├── get_slots.php          # GET: all assigned slots (INNER JOIN), filters
-│   ├── get_slot_details.php   # GET: single slot modal data
-│   ├── get_sensor_health.php  # GET: health check (online/offline/overstay)
-│   ├── get_slot_mappings.php  # GET: all parking_slots with sensor info (LEFT JOIN)
-│   ├── get_active_sensors.php # GET: unassigned + all sensor lists
-│   ├── add_slot.php           # POST: create a new parking slot
-│   ├── assign_sensor.php      # POST: assign sensor to slot (clears old slot)
-│   ├── delete_slot.php        # POST: delete slot by id
-│   └── update_slot.php        # GET: manual status override (?slot_id=&status=)
+├── api/                       # REST JSON endpoints
+│   ├── get_slots.php          # GET — assigned slots with status (dashboard data source)
+│   ├── get_slot_details.php   # GET — single slot details for modal popup
+│   ├── get_sensor_health.php  # GET — online/offline/overstay health per sensor
+│   ├── get_slot_mappings.php  # GET — slot↔sensor mapping table (admin)
+│   ├── get_active_sensors.php # GET — unassigned + all sensor lists (dropdowns)
+│   ├── add_slot.php           # POST — creates a new parking slot record
+│   ├── assign_sensor.php      # POST — assigns sensor to slot (clears previous)
+│   ├── edit_slot.php          # POST — edits slot metadata + reassign/unassign sensor
+│   ├── delete_slot.php        # POST — deletes a parking slot by ID
+│   └── update_slot.php        # GET — manual status override for maintenance
 │
-├── 11_gateway_POST/           # Linux BLE gateway (C application)
-│   ├── compile.sh             # Build script (gcc + dbus-1)
+├── 11_gateway_POST/           # BLE gateway (C on Linux)
+│   ├── main.c                 # Entry — BLE scan for NAZHAN, connect, notify, POST to PHP
+│   ├── ble.c / ble.h          # BlueZ D-Bus — device discovery, GATT notification subscription
+│   ├── sense.c / sense.h      # Ring buffer — queues readings (64 entries) before HTTP POST
+│   ├── client.c / client.h    # HTTP/1.1 socket client — POST request, response parsing
+│   ├── sys.c / sys.h          # System init, monotonic millisecond clock
+│   ├── global.h               # Master header — includes all sub-modules
+│   ├── compile.sh             # Build script — gcc + pkg-config dbus-1
 │   ├── gateway_POST           # Compiled binary
-│   ├── main.c                 # Entry: scan → connect → notify → POST loop
-│   ├── ble.c / ble.h          # BlueZ D-Bus BLE (scan, connect, notify, transmit)
-│   ├── sense.c / sense.h      # Ring buffer for sensor readings
-│   ├── client.c / client.h    # HTTP/1.1 socket client (POST/GET)
-│   ├── sys.c / sys.h          # System init, monotonic clock
-│   ├── global.h               # Shared includes and types
-│   └── POST.php               # Debug POST test script
+│   └── POST.php               # Debug — print_r($_POST) to inspect received data
 │
-├── carpark/                   # Legacy Arduino firmware (AVR C)
-│   ├── carpark.ino            # Entry — original version
-│   ├── uart.c / uart.h        # Hardware UART0 ISR-driven
-│   ├── swuart.c / swuart.h    # Software UART for BLE module
-│   ├── gpio.c / gpio.h        # GPIO abstraction
-│   ├── timer0.c / timer0.h    # Drives SWUART at ~38.4kHz
-│   ├── timer2.c / timer2.h    # 1ms system tick (SYS_TICK)
-│   ├── ble.c / ble.h          # BLE enable/state pin control
-│   ├── adc.c / adc.h          # ADC init and read
-│   ├── twi.c / twi.h          # TWI/I2C master
-│   ├── delay.c / delay.h      # Blocking delay using SYS_TICK
-│   └── err.c / err.h          # Error handler stub
+├── carpark(new)/              # Arduino firmware (AVR C, with battery monitoring)
+│   ├── carpark.ino            # Main loop — reads 4 IR sensors + battery ADC, sends BLE frames
+│   ├── battery.c / battery.h  # ADC-to-voltage conversion, percentage calculation
+│   ├── adc.c / adc.h          # ADC read — AVcc reference, averaging buffer
+│   ├── swuart.c / swuart.h    # Software UART — bit-banged serial for BLE module (ISR-driven)
+│   ├── uart.c / uart.h        # Hardware UART0 — ISR-driven serial at 9600 baud (debug)
+│   ├── ble.c / ble.h          # BLE control — GPIO enable pin, connection status, SWUART write
+│   ├── gpio.c / gpio.h        # GPIO — direct DDR/Port register manipulation
+│   ├── timer0.c / timer0.h    # Timer0 — drives SWUART at ~38.4kHz (CTC)
+│   ├── timer2.c / timer2.h    # Timer2 — 1ms system tick (SYS_TICK)
+│   ├── twi.c / twi.h          # TWI/I2C master — 100kHz bus
+│   ├── delay.c / delay.h      # Busy-wait delay using SYS_TICK
+│   ├── err.c / err.h          # Error handler stub
+│   └── global.h               # Master header — all modules + CHECK_ERROR_FATAL macro
 │
-├── carpark(new)/              # Current Arduino firmware (AVR C)
-│   ├── carpark.ino            # Entry — IR sensing + battery monitoring + BLE TX
-│   ├── uart.c / uart.h        # Hardware UART0 ISR-driven
-│   ├── swuart.c / swuart.h    # Software UART for BLE module
-│   ├── gpio.c / gpio.h        # GPIO abstraction
-│   ├── timer0.c / timer0.h    # Drives SWUART at ~38.4kHz
-│   ├── timer2.c / timer2.h    # 1ms system tick
-│   ├── ble.c / ble.h          # BLE enable/state pin control
-│   ├── adc.c / adc.h          # ADC init and read
-│   ├── battery.c / battery.h  # Battery voltage calculation + percentage
-│   ├── twi.c / twi.h          # TWI/I2C master
-│   ├── delay.c / delay.h      # Blocking delay
-│   └── err.c / err.h          # Error handler stub
-│
-├── includes/
-│   ├── db_connect.php         # MySQL connection (edit credentials here)
-│   ├── health_config.php      # Shared health thresholds (OFFLINE, OVERSTAY, LOG_FILE)
+├── includes/                  # PHP backend
+│   ├── db_connect.php         # MySQL connection (admin/admin123, smart_parking)
+│   ├── health_config.php      # Shared thresholds — OFFLINE (1h), OVERSTAY (24h), log paths
 │   └── auth.php               # Session-based admin authentication
 │
-├── services/
-│   ├── serial_reader.php      # Alternative: USB serial daemon
-│   └── sensor_health.php      # Background health check (run via cron)
+├── services/                  # Background services
+│   ├── serial_reader.php      # USB serial daemon — reads /dev/ttyACM0, parses CSV
+│   └── sensor_health.php      # Cron job — logs OFFLINE/OVERSTAY alerts
 │
 ├── database/
-│   ├── smart_parking.sql      # Schema + sample data (4 sensors, 4 slots)
-│   └── sample_data.sql        # Additional sample data
+│   ├── smart_parking.sql      # Schema — sensor_data + parking_slots with FK
+│   └── sample_data.sql        # Test data inserts
 │
 ├── logs/                      # Runtime logs
-│   └── sensor_health.log      # Offline/overstay alerts (auto-created)
+│   ├── sensor_health.log      # Health check alerts
+│   ├── post_raw.log           # Raw POST data dumps
+│   ├── sensor_data_debug.log  # Battery voltage debug log
+│   ├── updates.log            # Successful DB update records
+│   ├── error.log              # Placeholder
+│   ├── serial.log             # Placeholder
+│   ├── system.log             # Placeholder
+│   └── post_parsed.log        # Placeholder
+│
 ├── .gitignore
-├── INSTALLATION.md
+├── Info.md
 └── README.md                  # This file
 ```
 
