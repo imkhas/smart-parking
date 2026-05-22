@@ -163,7 +163,7 @@ int32_t BLE_Scan_Start(void) {
     
     dbus_error_init(&err);
     
-	msg = dbus_message_new_method_call("org.bluez", "/org/bluez/hci0", "org.bluez.Adapter1", "StartDiscovery");
+	msg = dbus_message_new_method_call("org.bluez", "/org/bluez/hci1", "org.bluez.Adapter1", "StartDiscovery");
     if(!msg) return BLE_ERROR_INIT_MESSAGE;
 
     if(!dbus_connection_send_with_reply_and_block(BLE_CONN, msg, -1, &err)) {
@@ -192,7 +192,7 @@ void BLE_Poll(BLE_DeviceFoundCallback cb) {
 		dbus_message_iter_init(msg, &args);
 		dbus_message_iter_get_basic(&args, &path);
 
-		if(strncmp(path, "/org/bluez/hci0/dev_", 20) == 0) {
+		if(strncmp(path, "/org/bluez/hci1/dev_", 20) == 0) {
 			if(get_device_info(path, name, sizeof(name), mac, sizeof(mac)) == 0) {
 				if(cb) cb(name, mac, path);
 				}
@@ -478,6 +478,7 @@ int32_t BLE_Transmit(const char *service_uuid, const char *char_uuid, const uint
 void BLE_Receive(const uint8_t *data, size_t len) {
 	SENSE_t sense;
 	FLOAT_VAL_t float_val;
+	size_t offset;
 	
 	
     printf("Received %zu bytes: ", len);
@@ -488,24 +489,26 @@ void BLE_Receive(const uint8_t *data, size_t len) {
     
     //byte:			0		1		2to5
     //field:		sid		mid		value(float)
+    // BLE module may concatenate multiple 6-byte frames into one notification
     
     
-	if(len == 6) {
-		
-		sense.sid 	= 	data[0];
-		sense.mid 	=  	data[1];
-		float_val.c[0] = 	data[2];
-		float_val.c[1] = 	data[3];
-		float_val.c[2] = 	data[4];
-		float_val.c[3] = 	data[5];
-		sense.value = float_val.f;
-		
-		sense.timestamp = time(NULL);	//unix timestamp
-		
-		printf("Writing to element %u, ", SENSE_WR);
-		
-		if(SENSE_Write(&sense) != SENSE_SUCCESS) printf("Buffer is FULL (max is %u readings)\n", SENSE_READING);
-		else printf("number of readings = %u\n", SENSE_READING);				
+	if(len >= 6 && (len % 6 == 0)) {
+		for(offset = 0; offset < len; offset += 6) {
+			sense.sid 	= 	data[offset];
+			sense.mid 	=  	data[offset + 1];
+			float_val.c[0] = 	data[offset + 2];
+			float_val.c[1] = 	data[offset + 3];
+			float_val.c[2] = 	data[offset + 4];
+			float_val.c[3] = 	data[offset + 5];
+			sense.value = float_val.f;
+			
+			sense.timestamp = time(NULL);	//unix timestamp
+			
+			printf("Writing to element %u, ", SENSE_WR);
+			
+			if(SENSE_Write(&sense) != SENSE_SUCCESS) printf("Buffer is FULL (max is %u readings)\n", SENSE_READING);
+			else printf("number of readings = %u\n", SENSE_READING);
+			}
 		}
 	}
 	
