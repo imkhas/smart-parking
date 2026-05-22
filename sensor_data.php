@@ -58,9 +58,9 @@ foreach ($entries as $entry) {
         $check->fetch();
         $check->close();
         
-        if ($cur_ts && ($timestamp - $cur_ts) < 3) {
-            continue;
-        }
+       // if ($cur_ts && ($timestamp - $cur_ts) < 3) {
+       //     continue;
+       // }
         
         // Update database
         $stmt = $conn->prepare("UPDATE sensor_data SET status = ?, timestamp = FROM_UNIXTIME(?) WHERE sensor_id = ?");
